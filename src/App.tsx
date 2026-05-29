@@ -5,7 +5,7 @@ import {
   Settings, HelpCircle, Search, User, Sparkles, 
   Layers, ChevronDown, ListCollapse,
   Brain, Network, BookOpen, Crown, ChevronRight, PlayCircle,
-  Trophy, Timer, Target, Star, Zap, Split, Cpu, RefreshCw
+  Trophy, Timer, Target, Star, Zap, Split, Cpu, RefreshCw, Database
 } from 'lucide-react';
 
 import { DSATopic, SortingAlgo, ListAlgo, TreeAlgo, LeetAlgo, Snapshot } from './types';
@@ -19,6 +19,9 @@ import LeetCodeCanvas from './components/LeetCodeCanvas';
 import CodeEditorPanel from './components/CodeEditorPanel';
 import VariablesTracker from './components/VariablesTracker';
 import OutputConsole from './components/OutputConsole';
+import JvmDeveloperMode from './components/JvmDeveloperMode';
+import SystemDesignSandbox from './components/SystemDesignSandbox';
+import AdvancedDsSandbox from './components/AdvancedDsSandbox';
 
 export default function App() {
   // Theme state
@@ -621,6 +624,42 @@ export default function App() {
                 <BookOpen className="w-4 h-4 shrink-0" />
                 {isSidebarOpen && <span>LeetCode Walk</span>}
               </button>
+
+              <button
+                onClick={() => handleTopicNavigation('jvm-mode')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'jvm-mode'
+                    ? 'bg-bg-card/85 text-text-accent border-r-2 border-accent-custom outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Cpu className="w-4 h-4 shrink-0 text-emerald-400" />
+                {isSidebarOpen && <span>JVM Developer Mode</span>}
+              </button>
+
+              <button
+                onClick={() => handleTopicNavigation('system-design')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'system-design'
+                    ? 'bg-bg-card/85 text-text-accent border-r-2 border-accent-custom outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Network className="w-4 h-4 shrink-0 text-indigo-400" />
+                {isSidebarOpen && <span>System Design</span>}
+              </button>
+
+              <button
+                onClick={() => handleTopicNavigation('advanced-ds')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'advanced-ds'
+                    ? 'bg-bg-card/85 text-text-accent border-r-2 border-accent-custom outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Database className="w-4 h-4 shrink-0 text-amber-400" />
+                {isSidebarOpen && <span>Advanced DS Deck</span>}
+              </button>
             </nav>
           </div>
 
@@ -646,6 +685,18 @@ export default function App() {
                 onNavigate={handleTopicNavigation} 
                 searchQuery={searchQuery}
               />
+            </div>
+          ) : activeTopic === 'jvm-mode' ? (
+            <div className="flex-1 overflow-y-auto p-1 bg-bg-app">
+              <JvmDeveloperMode triggerXp={triggerXpAward} />
+            </div>
+          ) : activeTopic === 'system-design' ? (
+            <div className="flex-1 overflow-y-auto p-1 bg-bg-app">
+              <SystemDesignSandbox triggerXp={triggerXpAward} />
+            </div>
+          ) : activeTopic === 'advanced-ds' ? (
+            <div className="flex-1 overflow-y-auto p-1 bg-bg-app">
+              <AdvancedDsSandbox />
             </div>
           ) : (
             // Full interactive layout structure

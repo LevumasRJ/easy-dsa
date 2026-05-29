@@ -199,6 +199,21 @@ export function generateListInsertSnapshots(
 ): Snapshot[] {
   const snapshots: Snapshot[] = [];
   const list = initialNodes.map(n => ({ ...n }));
+
+  if (list.length === 0) {
+    const tempId = 'temp_node';
+    const newTempNode: { id: string; value: number; nextId: string | null; isTemp?: boolean } = { id: tempId, value: newValue, nextId: null, isTemp: false };
+    snapshots.push({
+      lineHighlighted: 9,
+      actionType: 'done',
+      explanation: `List is empty! Inserting Node(${newValue}) as the new Head of the list.`,
+      linkedListState: [newTempNode],
+      variables: { head: newValue, current: 'null', temp: newValue },
+      consoleOutput: `[SUCCESS] Created new Head node with value ${newValue}`
+    });
+    return snapshots;
+  }
+
   const prevNode = list.find(n => n.id === insertAfterNodeId);
   const prevVal = prevNode ? prevNode.value : 'null';
 
@@ -259,7 +274,7 @@ export function generateListInsertSnapshots(
   const prevInList = list.find(n => n.id === insertAfterNodeId)!;
   prevInList.nextId = tempId;
 
-  const listFinalMutated = list.map(n => n.id === insertAfterNodeId ? { ...n, nextId: tempId } : { ...n });
+  const listFinalMutated: LinkedListNodeState[] = list.map(n => n.id === insertAfterNodeId ? { ...n, nextId: tempId } : { ...n });
   listFinalMutated.push({ ...newTempNode });
 
   snapshots.push({
@@ -275,21 +290,17 @@ export function generateListInsertSnapshots(
   // Flatten properly in order
   const flatNodes: LinkedListNodeState[] = [];
   const visited = new Set<string>();
-  let currId: string | null = list[0].id; // head
+  let currId: string | null = listFinalMutated[0].id; // head
 
   while (currId) {
     if (visited.has(currId)) break;
     visited.add(currId);
 
-    if (currId === insertAfterNodeId) {
-      flatNodes.push({ id: currId, value: prevNode.value, nextId: tempId });
-      flatNodes.push({ id: tempId, value: newValue, nextId: prevNode.nextId });
-      currId = prevNode.nextId;
-    } else {
-      const stateNode = list.find(n => n.id === currId)!;
-      flatNodes.push({ id: stateNode.id, value: stateNode.value, nextId: stateNode.nextId });
-      currId = stateNode.nextId;
-    }
+    const stateNode = listFinalMutated.find(n => n.id === currId);
+    if (!stateNode) break;
+
+    flatNodes.push({ id: stateNode.id, value: stateNode.value, nextId: stateNode.nextId, isTemp: stateNode.isTemp });
+    currId = stateNode.nextId;
   }
 
   // 6. Complete
@@ -312,6 +323,18 @@ export function generateListDeleteSnapshots(
   const snapshots: Snapshot[] = [];
   const list = initialNodes.map(n => ({ ...n }));
   const nodesCopy = () => list.map(n => ({ ...n }));
+
+  if (list.length === 0) {
+    snapshots.push({
+      lineHighlighted: 1,
+      actionType: 'done',
+      explanation: 'Linked List is already empty! Nothing to delete.',
+      linkedListState: [],
+      variables: { current: 'null', prev: 'null', target: targetValue },
+      consoleOutput: '[INFO] Deletion targeted on empty list, skipped.'
+    });
+    return snapshots;
+  }
 
   // 1. Init
   snapshots.push({
@@ -579,23 +602,25 @@ export function generateBSTInsertSnapshots(
   }
 
   // Splicing the new node coordinate calculation
-  const pNode = tree.find(n => n.id === parentId)!;
+  const pNode = tree.find(n => n.id === parentId);
   const newId = String(newValue);
   let newX = 300;
   let newY = 250;
 
-  if (newValue === 10) { newX = 50; newY = 320; }
-  else if (newValue === 25) { newX = 160; newY = 320; }
-  else if (newValue === 35) { newX = 230; newY = 320; }
-  else if (newValue === 45) { newX = 280; newY = 320; }
-  else if (newValue === 55) { newX = 320; newY = 320; }
-  else if (newValue === 65) { newX = 380; newY = 320; }
-  else if (newValue === 75) { newX = 440; newY = 320; }
-  else if (newValue === 90) { newX = 530; newY = 320; }
-  else {
-    // defaults
-    newX = direction === 'left' ? pNode.x - 40 : pNode.x + 40;
-    newY = pNode.y + 70;
+  if (pNode) {
+    if (newValue === 10) { newX = 50; newY = 320; }
+    else if (newValue === 25) { newX = 160; newY = 320; }
+    else if (newValue === 35) { newX = 230; newY = 320; }
+    else if (newValue === 45) { newX = 280; newY = 320; }
+    else if (newValue === 55) { newX = 320; newY = 320; }
+    else if (newValue === 65) { newX = 380; newY = 320; }
+    else if (newValue === 75) { newX = 440; newY = 320; }
+    else if (newValue === 90) { newX = 530; newY = 320; }
+    else {
+      // defaults
+      newX = direction === 'left' ? pNode.x - 40 : pNode.x + 40;
+      newY = pNode.y + 70;
+    }
   }
 
   const newNodeItem: TreeNodeState = {
@@ -610,21 +635,29 @@ export function generateBSTInsertSnapshots(
   };
 
   // Mutate parent tree representation
-  if (direction === 'left') {
-    pNode.leftId = newId;
-  } else {
-    pNode.rightId = newId;
+  if (pNode) {
+    if (direction === 'left') {
+      pNode.leftId = newId;
+    } else {
+      pNode.rightId = newId;
+    }
   }
   tree.push(newNodeItem);
 
   snapshots.push({
     lineHighlighted: 5,
     actionType: 'insert',
-    explanation: `Target insertion leaf reached! Appending custom Node(${newValue}) under parent ${pNode.value} on the ${direction}`,
+    explanation: pNode
+      ? `Target insertion leaf reached! Appending custom Node(${newValue}) under parent ${pNode.value} on the ${direction}`
+      : `Target insertion leaf reached! Appending custom Node(${newValue}) as root`,
     treeState: treeCopy(),
-    variables: { parent: pNode.value, parentRight: pNode.rightId || 'None', parentLeft: pNode.leftId || 'None' },
+    variables: pNode 
+      ? { parent: pNode.value, parentRight: pNode.rightId || 'None', parentLeft: pNode.leftId || 'None' }
+      : {},
     highlightedNodes: [newId],
-    consoleOutput: `[SUCCESS] BST insertion solved successfully! Node(${newValue}) is a child of Node(${pNode.value})`
+    consoleOutput: pNode
+      ? `[SUCCESS] BST insertion solved successfully! Node(${newValue}) is a child of Node(${pNode.value})`
+      : `[SUCCESS] BST insertion solved successfully! Node(${newValue}) is a parentless root`
   });
 
   return snapshots;
@@ -768,7 +801,8 @@ export function generateBSTInorderSnapshots(
       return;
     }
 
-    const node = tree.find(n => n.id === nodeId)!;
+    const node = tree.find(n => n.id === nodeId);
+    if (!node) return;
 
     snapshots.push({
       lineHighlighted: 4,
@@ -811,7 +845,20 @@ export function generateBSTInorderSnapshots(
     traverse(node.rightId);
   }
 
-  traverse('50');
+  // Find root node dynamically (the node with no parents)
+  let rootId = '50';
+  if (tree.length > 0) {
+    const leftIds = new Set(tree.map(n => n.leftId).filter(Boolean));
+    const rightIds = new Set(tree.map(n => n.rightId).filter(Boolean));
+    const rootNode = tree.find(n => !leftIds.has(n.id) && !rightIds.has(n.id));
+    if (rootNode) {
+      rootId = rootNode.id;
+    } else {
+      rootId = tree[0].id;
+    }
+  }
+
+  traverse(rootId);
 
   snapshots.push({
     lineHighlighted: 3,

@@ -45,7 +45,7 @@ export interface CodeTemplate {
   code: { line: number; text: string; indent: number }[];
 }
 
-export type DSATopic = 'explore' | 'sorting' | 'linked-list' | 'trees' | 'graphs' | 'dp' | 'leetcode';
+export type DSATopic = 'explore' | 'sorting' | 'linked-list' | 'trees' | 'graphs' | 'dp' | 'leetcode' | 'jvm-mode' | 'system-design' | 'advanced-ds';
 export type SortingAlgo = 'quicksort' | 'bubblesort';
 export type ListAlgo = 'insertAfter' | 'deleteNode';
 export type TreeAlgo = 'insertBST' | 'searchBST' | 'inorderBST';
