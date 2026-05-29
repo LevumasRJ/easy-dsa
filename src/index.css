@@ -1,9 +1,83 @@
 @import "tailwindcss";
 
+:root {
+  --bg-app: #0b1326;
+  --bg-panel: #0f172a;
+  --bg-header: #0b1326;
+  --bg-card: #131b2e;
+  --text-primary: #dae2fd;
+  --text-muted: #94a3b8;
+  --text-accent: #8083ff;
+  --border-color: rgba(51, 65, 85, 0.8);
+  --accent-color: #8083ff;
+  --glow-color: rgba(128, 131, 255, 0.35);
+}
+
+.theme-light {
+  --bg-app: #f8fafc;
+  --bg-panel: #ffffff;
+  --bg-header: #f1f5f9;
+  --bg-card: #f8fafc;
+  --text-primary: #0f172a;
+  --text-muted: #475569;
+  --text-accent: #4f46e5;
+  --border-color: #cbd5e1;
+  --accent-color: #4f46e5;
+  --glow-color: rgba(79, 70, 229, 0.15);
+}
+
+.theme-amoled {
+  --bg-app: #000000;
+  --bg-panel: #000000;
+  --bg-header: #000000;
+  --bg-card: #0a0a0a;
+  --text-primary: #ffffff;
+  --text-muted: #71717a;
+  --text-accent: #00e5ff;
+  --border-color: #27272a;
+  --accent-color: #00e5ff;
+  --glow-color: rgba(0, 229, 255, 0.25);
+}
+
+.theme-hacker {
+  --bg-app: #020703;
+  --bg-panel: #040d06;
+  --bg-header: #020703;
+  --bg-card: #051408;
+  --text-primary: #39ff14;
+  --text-muted: #1e7010;
+  --text-accent: #39ff14;
+  --border-color: #1e7010;
+  --accent-color: #3dff1d;
+  --glow-color: rgba(57, 255, 20, 0.4);
+}
+
+.theme-cyberpunk {
+  --bg-app: #0c021b;
+  --bg-panel: #170535;
+  --bg-header: #0f0224;
+  --bg-card: #22094c;
+  --text-primary: #ff007f;
+  --text-muted: #00f0ff;
+  --text-accent: #fcee0a;
+  --border-color: #ff007f;
+  --accent-color: #00f0ff;
+  --glow-color: rgba(255, 0, 127, 0.4);
+}
+
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --font-display: "Space Grotesk", sans-serif;
+  --color-bg-app: var(--bg-app);
+  --color-bg-panel: var(--bg-panel);
+  --color-bg-header: var(--bg-header);
+  --color-bg-card: var(--bg-card);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-text-accent: var(--text-accent);
+  --color-border-custom: var(--border-color);
+  --color-accent-custom: var(--accent-color);
 }
 
 /* Custom visualizer classes */
@@ -22,7 +96,7 @@
 }
 
 .neon-glow-primary {
-  box-shadow: 0 0 20px rgba(128, 131, 255, 0.35);
+  box-shadow: 0 0 20px var(--glow-color);
 }
 
 .pulse-cyan {
