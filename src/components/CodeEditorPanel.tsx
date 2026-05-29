@@ -2,7 +2,145 @@ import { useState } from 'react';
 import { Copy, Check, FileCode } from 'lucide-react';
 import { CodeLanguage } from '../types';
 import { CODE_SNIPPETS } from '../codeSnippets';
-import { LEETCODE_CODE_SNIPPETS } from '../leetcodeDatabase';
+import { LEETCODE_CODE_SNIPPETS, NEETCODE_PROBLEMS } from '../leetcodeDatabase';
+
+// Generate dynamic boilerplates for LeetCode problems when explicit snippets aren't configured
+function getDynamicSnippets(problem: any) {
+  const titleCamel = problem.title
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9\s]/g, '')
+    .split(' ')
+    .map((word: string, i: number) => i === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1))
+    .join('');
+
+  // Sensible default arguments and types based on name/category
+  let argCpp = "vector<int>& nums";
+  let argPy = "self, nums: List[int]";
+  let argJs = "nums";
+  let argJava = "int[] nums";
+  
+  let retCpp = "bool";
+  let retPy = "bool";
+  let retJs = "boolean";
+  let retJava = "boolean";
+  
+  let dfltCpp = "false";
+  let dfltPy = "False";
+  let dfltJs = "false";
+  let dfltJava = "false";
+
+  const cat = problem.category || "";
+  const title = problem.title.toLowerCase();
+
+  if (cat.includes("Tree")) {
+    argCpp = "TreeNode* root";
+    argPy = "self, root: Optional[TreeNode]";
+    argJs = "root";
+    argJava = "TreeNode root";
+    retCpp = "TreeNode*";
+    retPy = "Optional[TreeNode]";
+    retJs = "TreeNode";
+    retJava = "TreeNode";
+    dfltCpp = "nullptr";
+    dfltPy = "None";
+    dfltJs = "null";
+    dfltJava = "null";
+  } else if (cat.includes("Linked List")) {
+    argCpp = "ListNode* head";
+    argPy = "self, head: Optional[ListNode]";
+    argJs = "head";
+    argJava = "ListNode head";
+    retCpp = "ListNode*";
+    retPy = "Optional[ListNode]";
+    retJs = "ListNode";
+    retJava = "ListNode";
+    dfltCpp = "nullptr";
+    dfltPy = "None";
+    dfltJs = "null";
+    dfltJava = "null";
+  } else if (title.includes("sum") || title.includes("target") || title.includes("search") || title.includes("index") || title.includes("element")) {
+    argCpp = "vector<int>& nums, int target";
+    argPy = "self, nums: List[int], target: int";
+    argJs = "nums, target";
+    argJava = "int[] nums, int target";
+    retCpp = "int";
+    retPy = "int";
+    retJs = "number";
+    retJava = "int";
+    dfltCpp = "-1";
+    dfltPy = "-1";
+    dfltJs = "-1";
+    dfltJava = "-1";
+  } else if (title.includes("anagram") || title.includes("string") || title.includes("palindrome") || title.includes("valid") || title.includes("common") || title.includes("prefix")) {
+    argCpp = "string s";
+    argPy = "self, s: str";
+    argJs = "s";
+    argJava = "String s";
+    if (title.includes("prefix") || title.includes("roman") || title.includes("string_to_integer") || title.includes("conversion")) {
+      retCpp = "string";
+      retPy = "str";
+      retJs = "string";
+      retJava = "String";
+      dfltCpp = '""';
+      dfltPy = '""';
+      dfltJs = '""';
+      dfltJava = '""';
+    } else {
+      retCpp = "bool";
+      retPy = "bool";
+      retJs = "boolean";
+      retJava = "boolean";
+      dfltCpp = "false";
+      dfltPy = "False";
+      dfltJs = "false";
+      dfltJava = "false";
+    }
+  }
+
+  return {
+    cpp: [
+      { text: `// ${problem.title} (LeetCode #${problem.number})`, indent: 0 },
+      { text: `// Category: ${problem.category} | Acceptance: ${problem.acceptance}`, indent: 0 },
+      { text: `class Solution {`, indent: 0 },
+      { text: `public:`, indent: 0 },
+      { text: `    ${retCpp} ${titleCamel}(${argCpp}) {`, indent: 1 },
+      { text: `        // TODO: Implement Dynamic Solution`, indent: 2 },
+      { text: `        return ${dfltCpp};`, indent: 2 },
+      { text: `    }`, indent: 1 },
+      { text: `};`, indent: 0 }
+    ],
+    python: [
+      { text: `# ${problem.title} (LeetCode #${problem.number})`, indent: 0 },
+      { text: `# Category: ${problem.category} | Acceptance: ${problem.acceptance}`, indent: 0 },
+      { text: `class Solution:`, indent: 0 },
+      { text: `    def ${titleCamel}(${argPy}) -> ${retPy}:`, indent: 1 },
+      { text: `        # TODO: Implement Dynamic Solution`, indent: 2 },
+      { text: `        return ${dfltPy}`, indent: 2 }
+    ],
+    javascript: [
+      { text: `/**`, indent: 0 },
+      { text: ` * ${problem.title} (LeetCode #${problem.number})`, indent: 0 },
+      { text: ` * Category: ${problem.category}`, indent: 0 },
+      { text: ` * @param {${retJs === 'boolean' ? 'number[]' : 'string'}} ${argJs.split(',')[0]}`, indent: 0 },
+      { text: ` * @return {${retJs}}`, indent: 0 },
+      { text: ` */`, indent: 0 },
+      { text: `var ${titleCamel} = function(${argJs}) {`, indent: 0 },
+      { text: `    // TODO: Implement Dynamic Solution`, indent: 1 },
+      { text: `    return ${dfltJs};`, indent: 1 },
+      { text: `};`, indent: 0 }
+    ],
+    java: [
+      { text: `// ${problem.title} (LeetCode #${problem.number})`, indent: 0 },
+      { text: `// Category: ${problem.category} | Acceptance: ${problem.acceptance}`, indent: 0 },
+      { text: `class Solution {`, indent: 0 },
+      { text: `    public ${retJava} ${titleCamel}(${argJava}) {`, indent: 1 },
+      { text: `        // TODO: Implement Dynamic Solution`, indent: 2 },
+      { text: `        return ${dfltJava};`, indent: 2 },
+      { text: `    }`, indent: 1 },
+      { text: `}`, indent: 0 }
+    ]
+  };
+}
 
 interface CodeEditorPanelProps {
   currentAlgorithm: string; // e.g., 'bubblesort', 'quicksort', 'insertAfter', 'deleteNode', 'insertBST' or 'twosum', 'valid_parentheses'...
@@ -18,9 +156,18 @@ export default function CodeEditorPanel({
 
   // Retrieve lines (checking if currentAlgorithm is in LEETCODE_CODE_SNIPPETS first)
   const isLeetCode = currentAlgorithm in LEETCODE_CODE_SNIPPETS;
-  const algoSnippets = isLeetCode 
-    ? LEETCODE_CODE_SNIPPETS[currentAlgorithm] 
-    : (CODE_SNIPPETS[currentAlgorithm] || CODE_SNIPPETS.bubblesort);
+  
+  let algoSnippets;
+  if (isLeetCode) {
+    algoSnippets = LEETCODE_CODE_SNIPPETS[currentAlgorithm];
+  } else {
+    const matchedProblem = NEETCODE_PROBLEMS.find(p => p.id === currentAlgorithm);
+    if (matchedProblem) {
+      algoSnippets = getDynamicSnippets(matchedProblem);
+    } else {
+      algoSnippets = CODE_SNIPPETS[currentAlgorithm] || CODE_SNIPPETS.bubblesort;
+    }
+  }
     
   const lines = algoSnippets[activeLang];
 

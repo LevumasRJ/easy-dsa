@@ -49,4 +49,4 @@ export type DSATopic = 'explore' | 'sorting' | 'linked-list' | 'trees' | 'graphs
 export type SortingAlgo = 'quicksort' | 'bubblesort';
 export type ListAlgo = 'insertAfter' | 'deleteNode';
 export type TreeAlgo = 'insertBST' | 'searchBST' | 'inorderBST';
-export type LeetAlgo = 'twosum' | 'valid_parentheses' | 'reverse_list' | 'invert_tree' | 'binary_search' | 'buy_sell_stock' | 'container_with_most_water' | 'group_anagrams' | 'threesum' | 'longest_substring' | 'merge_two_lists';
+export type LeetAlgo = 'twosum' | 'valid_parentheses' | 'reverse_list' | 'invert_tree' | 'binary_search' | 'buy_sell_stock' | 'container_with_most_water' | 'group_anagrams' | 'threesum' | 'longest_substring' | 'merge_two_lists' | string;
