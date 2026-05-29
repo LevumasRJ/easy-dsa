@@ -1,0 +1,6 @@
+{
+  "name": "AlgoFlow",
+  "description": "Interactive Data Structures & Algorithms Animator Platform for sorting, linked list and BST visualization with a deterministic snapshot engine, playback controls, variable watch, and synchronized code execution trace.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
