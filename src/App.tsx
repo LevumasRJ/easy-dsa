@@ -82,6 +82,7 @@ export default function App() {
   const [badges, setBadges] = useState<string[]>([
     'Visual Maven',
   ]);
+  const [awardedActions, setAwardedActions] = useState<string[]>([]);
 
   // AI Tutor Coach State
   const [aiTutorDifficulty, setAiTutorDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
@@ -130,6 +131,13 @@ export default function App() {
     setTimeout(() => setShowXpAlert(null), 3500);
   };
 
+  // Deduplicating XP award helper
+  const awardXpOnce = (actionId: string, amount: number, reason: string) => {
+    if (awardedActions.includes(actionId)) return;
+    setAwardedActions(prev => [...prev, actionId]);
+    triggerXpAward(amount, reason);
+  };
+
   // Timed Interview ticking
   useEffect(() => {
     if (!interviewMode) return;
@@ -173,9 +181,10 @@ export default function App() {
 
     const tick = () => {
       setCurrentIndex((prev) => {
+        const currentAlgoId = getEditorAlgoId();
         if (prev >= snapshots.length - 1) {
           setIsPlaying(false);
-          triggerXpAward(50, 'Completed Entire Execution Stream Trace');
+          awardXpOnce(`complete_run_${currentAlgoId}`, 50, 'Completed Entire Execution Stream Trace');
           return prev;
         }
 
@@ -191,11 +200,6 @@ export default function App() {
             algoA_Swaps: snapshots.slice(0, prev + 2).filter(s => s.actionType === 'swap').length,
             algoB_Swaps: compareSnapshots.slice(0, Math.min(compareSnapshots.length, prev + 2)).filter(s => s.actionType === 'swap').length,
           }));
-        }
-
-        // Award micro-progression XP
-        if ((prev + 1) % 5 === 0) {
-          triggerXpAward(10, 'Tracing Logic Steps');
         }
 
         return prev + 1;
@@ -217,7 +221,7 @@ export default function App() {
   const handleStepForward = () => {
     setIsPlaying(false);
     setCurrentIndex((prev) => Math.min(snapshots.length - 1, prev + 1));
-    triggerXpAward(5, 'Iterating step manual trace');
+    awardXpOnce(`manual_step_${getEditorAlgoId()}`, 10, 'Analyzed algorithm state using step debugger');
   };
 
   const handleStepBackward = () => {
@@ -233,7 +237,7 @@ export default function App() {
   const handleSkipToEnd = () => {
     setIsPlaying(false);
     setCurrentIndex(snapshots.length - 1);
-    triggerXpAward(20, 'Skipped directly to result');
+    awardXpOnce(`skip_end_${getEditorAlgoId()}`, 15, 'Analyzed execution state terminal boundary');
   };
 
   // Tracing snapshot objects
@@ -272,7 +276,7 @@ export default function App() {
       if (topic === 'trees') setActiveTreeAlgo(defaultAlgo as TreeAlgo);
       if (topic === 'leetcode') setActiveLeetAlgo(defaultAlgo as LeetAlgo);
     }
-    triggerXpAward(20, `Entered ${topic.toUpperCase()} Sandbox Module`);
+    awardXpOnce(`nav_module_${topic}`, 20, `Entered ${topic.toUpperCase()} Sandbox Module`);
   };
 
   const exportSnapshotsAsJson = () => {
@@ -312,7 +316,7 @@ export default function App() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     
-    triggerXpAward(30, 'Exported algorithmic snapshots execution trace JSON file 📥');
+    awardXpOnce(`export_trace_${currentAlgoId}`, 30, 'Exported algorithmic snapshots execution trace JSON file 📥');
   };
 
   // Custom Socratic tutor automatic responses
@@ -516,7 +520,7 @@ export default function App() {
               key={t}
               onClick={() => {
                 setTheme(t as any);
-                triggerXpAward(10, `Loaded ${t.toUpperCase()} style token`);
+                awardXpOnce(`theme_load_${t}`, 10, `Loaded ${t.toUpperCase()} style token`);
               }}
               className={`px-2 py-1 text-[9px] font-mono font-bold uppercase rounded-lg transition-all cursor-pointer ${
                 theme === t 
@@ -543,7 +547,7 @@ export default function App() {
               onClick={() => {
                 setInterviewMode(true);
                 setInterviewTimer(180);
-                triggerXpAward(50, 'Staff Interview challenge session started');
+                awardXpOnce('interview_session_start', 50, 'Staff Interview challenge session started');
               }}
               className="bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-mono font-bold active:scale-95 transition-all"
             >
@@ -947,6 +951,7 @@ export default function App() {
                     <CodeEditorPanel 
                       currentAlgorithm={getEditorAlgoId()} 
                       lineHighlighted={activeSnap.lineHighlighted}
+                      awardXpOnce={awardXpOnce}
                     />
                   </div>
 
@@ -1229,10 +1234,11 @@ export default function App() {
                 </div>
 
                 {/* 2. Standard Code template tracker panel */}
-                <div className="h-[30%]">
+                <div className="h-[30%] font-mono">
                   <CodeEditorPanel 
                     currentAlgorithm={getEditorAlgoId()} 
                     lineHighlighted={activeSnap.lineHighlighted}
+                    awardXpOnce={awardXpOnce}
                   />
                 </div>
                 
