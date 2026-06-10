@@ -1,4 +1,5 @@
 import { NEETCODE_PROBLEMS, LeetCodeProblem } from '../leetcodeDatabase';
+import { SUPPLEMENTAL_PROBLEMS } from '../supplementalProblems';
 
 // Detailed descriptions for missing popular LeetCode/NeetCode problems
 export const MISSING_PROBLEMS_CATALOG: LeetCodeProblem[] = [
@@ -122,7 +123,7 @@ export function getDynamicSyncedProblems(): LeetCodeProblem[] {
 
 // Combines the base hardcoded problems with dynamically scraped ones
 export function getAllProblems(): LeetCodeProblem[] {
-  const base = [...NEETCODE_PROBLEMS];
+  const base = [...NEETCODE_PROBLEMS, ...SUPPLEMENTAL_PROBLEMS];
   const dynamic = getDynamicSyncedProblems();
   
   // Filter out any duplicates to keep DB consistent

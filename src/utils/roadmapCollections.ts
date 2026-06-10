@@ -2,16 +2,20 @@
  * Standard LeetCode / NeetCode Curriculum Collections & Playlists
  */
 
-import { LeetCodeProblem } from '../leetcodeDatabase';
+import { LeetCodeProblem, NEETCODE_PROBLEMS } from '../leetcodeDatabase';
 
 // 1. Blind 75 Problem Numbers (official list of 75 essential interview questions)
 export const BLIND_75_NUMBERS = new Set([
-  1, 217, 242, 49, 347, 238, 128, 125, 15, 11, 121, 3, 424, 76, 20, 155,
-  150, 22, 739, 84, 704, 74, 875, 153, 33, 206, 21, 143, 19, 141, 100,
-  104, 226, 572, 102, 199, 230, 235, 105, 124, 297, 208, 211, 212, 133,
-  200, 417, 207, 261, 323, 78, 90, 39, 46, 79, 131, 17, 51, 703, 215,
-  295, 70, 198, 213, 91, 139, 322, 300, 1143, 518, 55, 45, 134, 846,
-  763, 53, 56, 57, 435, 252, 253, 202, 54, 73, 48, 191, 338, 190, 268
+  1, 121, 217, 238, 53, 152, 153, 33, 15, 11, // Arrays/Pointers
+  371, 191, 338, 190, 268, // Binary
+  70, 322, 300, 1143, 139, 39, 198, 213, 91, 62, 55, // DP / Backtracking / Seq
+  133, 207, 417, 200, 128, 269, 261, 323, // Graph
+  57, 56, 435, 252, 253, // Intervals
+  206, 141, 21, 23, 19, 143, // Linked List
+  73, 54, 48, 79, // Matrix
+  3, 424, 76, 242, 49, 20, 125, 5, 647, // String
+  104, 100, 226, 124, 102, 297, 572, 105, 98, 230, 235, 236, // Tree
+  347, 295, 212, 208, 211 // Heap / Trie / Advanced
 ]);
 
 // 2. LeetCode 50 Problem Numbers (highly selective subset of top-tier foundational patterns)
@@ -95,10 +99,108 @@ export const PLAYLISTS: PlaylistInfo[] = [
   }
 ];
 
+// Lazy-loaded set for precise NeetCode 150 members check
+let neetcode150Ids: Set<string> | null = null;
+export function getNeetcode150Ids(): Set<string> {
+  if (!neetcode150Ids) {
+    neetcode150Ids = new Set((NEETCODE_PROBLEMS || []).map(p => p.id));
+  }
+  return neetcode150Ids;
+}
+
+// Sets of IDs for each playlist, lazy loaded and cached based on allProblemsList
+let playlistIdCache: Record<PlaylistId, Set<string>> | null = null;
+let lastProblemsListRef: any = null;
+
+export function buildPlaylistIdCache(allProblems: LeetCodeProblem[]) {
+  if (playlistIdCache && lastProblemsListRef === allProblems) {
+    return playlistIdCache;
+  }
+  
+  const cache: Record<PlaylistId, Set<string>> = {
+    all: new Set(allProblems.map(p => p.id)),
+    lc50: new Set<string>(),
+    blind75: new Set<string>(),
+    lc100: new Set<string>(),
+    nc150: new Set<string>(),
+    lc250: new Set<string>()
+  };
+
+  // 1. NeetCode 150: Exactly the original 150 base problems (those within the base 150 catalog)
+  const nc150List = allProblems.filter(p => !p.id.startsWith('supp_') && !p.id.startsWith('proc_') && !p.id.startsWith('scraped_')).slice(0, 150);
+  nc150List.forEach(p => cache.nc150.add(p.id));
+
+  // 2. LeetCode 50: Target exactly 50
+  const lc50Candidates = allProblems.filter(p => LEETCODE_50_NUMBERS.has(p.number));
+  const uniqueLc50: LeetCodeProblem[] = [];
+  const seenLc50 = new Set<number>();
+  lc50Candidates.forEach(p => {
+    if (!seenLc50.has(p.number)) {
+      seenLc50.add(p.number);
+      uniqueLc50.push(p);
+    }
+  });
+  if (uniqueLc50.length < 50) {
+    const filler = allProblems.filter(p => !uniqueLc50.some(u => u.id === p.id));
+    uniqueLc50.push(...filler.slice(0, 50 - uniqueLc50.length));
+  }
+  uniqueLc50.slice(0, 50).forEach(p => cache.lc50.add(p.id));
+
+  // 3. Blind 75: Target exactly 75
+  const blind75Candidates = allProblems.filter(p => BLIND_75_NUMBERS.has(p.number));
+  const uniqueBlind75: LeetCodeProblem[] = [];
+  const seenBlind75 = new Set<number>();
+  blind75Candidates.forEach(p => {
+    if (!seenBlind75.has(p.number)) {
+      seenBlind75.add(p.number);
+      uniqueBlind75.push(p);
+    }
+  });
+  if (uniqueBlind75.length < 75) {
+    const filler = allProblems.filter(p => !uniqueBlind75.some(u => u.id === p.id));
+    uniqueBlind75.push(...filler.slice(0, 75 - uniqueBlind75.length));
+  }
+  uniqueBlind75.slice(0, 75).forEach(p => cache.blind75.add(p.id));
+
+  // 4. LeetCode 100: Target exactly 100
+  const lc100Candidates = allProblems.filter(p => LEETCODE_100_NUMBERS.has(p.number));
+  const uniqueLc100: LeetCodeProblem[] = [];
+  const seenLc100 = new Set<number>();
+  lc100Candidates.forEach(p => {
+    if (!seenLc100.has(p.number)) {
+      seenLc100.add(p.number);
+      uniqueLc100.push(p);
+    }
+  });
+  if (uniqueLc100.length < 100) {
+    const filler = allProblems.filter(p => !uniqueLc100.some(u => u.id === p.id));
+    uniqueLc100.push(...filler.slice(0, 100 - uniqueLc100.length));
+  }
+  uniqueLc100.slice(0, 100).forEach(p => cache.lc100.add(p.id));
+
+  // 5. LeetCode 250 (Top 250 Bank): Target exactly 250 problems
+  // Filters for base 250 (excluding scraped items), ensuring exactly 250 are captured, fallback to filler if needed.
+  const lc250Problems = allProblems.filter(p => !p.id.startsWith('scraped_')).slice(0, 250);
+  if (lc250Problems.length < 250) {
+    const filler = allProblems.filter(p => !lc250Problems.some(u => u.id === p.id));
+    lc250Problems.push(...filler.slice(0, 250 - lc250Problems.length));
+  }
+  lc250Problems.forEach(p => cache.lc250.add(p.id));
+
+  playlistIdCache = cache;
+  lastProblemsListRef = allProblems;
+  return cache;
+}
+
 /**
  * Checks if a problem belongs to a specific playbook
  */
-export function isProblemInPlaylist(prob: LeetCodeProblem, playlistId: PlaylistId): boolean {
+export function isProblemInPlaylist(prob: LeetCodeProblem, playlistId: PlaylistId, allProblems?: LeetCodeProblem[]): boolean {
+  if (allProblems) {
+    const cache = buildPlaylistIdCache(allProblems);
+    return cache[playlistId].has(prob.id);
+  }
+  
   switch (playlistId) {
     case 'all':
       return true;
@@ -109,12 +211,10 @@ export function isProblemInPlaylist(prob: LeetCodeProblem, playlistId: PlaylistI
     case 'lc100':
       return LEETCODE_100_NUMBERS.has(prob.number);
     case 'nc150':
-      // NeetCode 150 has exactly the 150 base items (numbered less than or equal to their IDs)
-      // Any base item is in nc150
-      return prob.number <= 2000; // Let's check: any problem originally in the base catalog can match
+      // Return true only if it is actually in the original NeetCode 150 bank
+      return getNeetcode150Ids().has(prob.id);
     case 'lc250':
-      // Everything plus some of the extra ones
-      return true;
+      return !prob.id.startsWith('scraped_');
     default:
       return true;
   }

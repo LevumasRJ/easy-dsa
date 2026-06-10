@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Plus, Search, Compass, Database, Hash, HelpCircle, 
@@ -204,40 +204,66 @@ export default function LeetCodeCanvas({
     mergeList2Input
   ]);
 
-  // Categories helper
-  const categories = [
-    'All',
-    'Arrays & Hashing',
-    'Two Pointers',
-    'Sliding Window',
-    'Stack',
-    'Binary Search',
-    'Linked List',
-    'Trees',
-    'Tries',
-    'Heap / Priority Queue',
-    'Backtracking',
-    'Graphs',
-    'Advanced Graphs',
-    '1-D DP',
-    '2-D DP',
-    'Greedy',
-    'Intervals',
-    'Math & Geometry',
-    'Bit Manipulation'
-  ];
+  // Categories helper derived dynamically from the full list to support new synced categories!
+  const categories = useMemo(() => {
+    const defaultCategories = [
+      'All',
+      'Arrays & Hashing',
+      'Two Pointers',
+      'Sliding Window',
+      'Stack',
+      'Binary Search',
+      'Linked List',
+      'Trees',
+      'Tries',
+      'Heap / Priority Queue',
+      'Backtracking',
+      'Graphs',
+      'Advanced Graphs',
+      '1-D DP',
+      '2-D DP',
+      'Greedy',
+      'Intervals',
+      'Math & Geometry',
+      'Bit Manipulation'
+    ];
+    
+    // Get unique categories from problemsList
+    const unique = new Set<string>();
+    problemsList.forEach(p => {
+      if (p.category) {
+        unique.add(p.category);
+      }
+    });
+    
+    // Combine defaults retaining their order, then append any new unique ones
+    const combined: string[] = ['All'];
+    defaultCategories.slice(1).forEach(cat => {
+      if (unique.has(cat)) {
+        combined.push(cat);
+        unique.delete(cat);
+      }
+    });
+    
+    // Any remaining unique categories not in default list are appended (e.g. from LeetCode sync)
+    unique.forEach(cat => {
+      combined.push(cat);
+    });
+    
+    return combined;
+  }, [problemsList]);
 
-  // Dynamic playlist counts based on current active list state
-  const lc50Count = problemsList.filter(p => isProblemInPlaylist(p, 'lc50')).length;
-  const blind75Count = problemsList.filter(p => isProblemInPlaylist(p, 'blind75')).length;
-  const lc100Count = problemsList.filter(p => isProblemInPlaylist(p, 'lc100')).length;
-  const nc150Count = problemsList.filter(p => isProblemInPlaylist(p, 'nc150')).length;
-  const lc250Count = problemsList.filter(p => isProblemInPlaylist(p, 'lc250')).length;
+  // Dynamic playlist counts based on current active list state with precision caching
+  const lc50Count = problemsList.filter(p => isProblemInPlaylist(p, 'lc50', problemsList)).length;
+  const blind75Count = problemsList.filter(p => isProblemInPlaylist(p, 'blind75', problemsList)).length;
+  const lc100Count = problemsList.filter(p => isProblemInPlaylist(p, 'lc100', problemsList)).length;
+  const nc150Count = problemsList.filter(p => isProblemInPlaylist(p, 'nc150', problemsList)).length;
+  const lc250Count = problemsList.filter(p => isProblemInPlaylist(p, 'lc250', problemsList)).length;
   const allCount = problemsList.length;
 
   // Filter problems registry
   const filteredProblems = problemsList.filter(p => {
-    const matchesPlaylist = isProblemInPlaylist(p, selectedPlaylist);
+    const matchesPlaylist = isProblemInPlaylist(p, selectedPlaylist, problemsList);
     const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
     const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
