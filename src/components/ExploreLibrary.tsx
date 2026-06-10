@@ -26,7 +26,7 @@ export default function ExploreLibrary({ onNavigate, searchQuery }: ExploreLibra
       desc: 'Visualize how A* intelligently navigates complex grids, balancing distance to the goal with movement cost to find the optimal path.',
       icon: <Network className="w-10 h-10 text-[#bfdbfe]" />,
       color: 'border-[#bfdbfe]/20 hover:border-[#bfdbfe]/60',
-      action: () => onNavigate('sorting', 'quicksort') // Redirects to cool visualizer or simulates action
+      action: () => onNavigate('graphs')
     },
     {
       id: 'bst',
@@ -102,11 +102,11 @@ export default function ExploreLibrary({ onNavigate, searchQuery }: ExploreLibra
                 Watch A* navigate dynamic maps using heuristics to target high probability cells, calculating coordinates, G/H costs recursively.
               </p>
               <button 
-                onClick={() => onNavigate('sorting', 'quicksort')}
+                onClick={() => onNavigate('graphs')}
                 className="flex items-center gap-2 bg-[#c0c1ff] active:scale-95 text-[#1000a9] text-xs font-bold tracking-wider px-5 py-2.5 rounded-lg hover:bg-[#e1e0ff] transition-all cursor-pointer shadow-lg"
               >
                 <Play className="w-4 h-4 fill-current" />
-                Launch Sample QuickSort Visualizer
+                Launch A* Grid Pathfinding Visualizer
               </button>
             </div>
           </div>

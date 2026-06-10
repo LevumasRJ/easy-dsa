@@ -5,7 +5,8 @@ import {
   Settings, HelpCircle, Search, User, Sparkles, 
   Layers, ChevronDown, ListCollapse,
   Brain, Network, BookOpen, Crown, ChevronRight, PlayCircle,
-  Trophy, Timer, Target, Star, Zap, Split, Cpu, RefreshCw, Database
+  Trophy, Timer, Target, Star, Zap, Split, Cpu, RefreshCw, Database,
+  FileJson, Compass
 } from 'lucide-react';
 
 import { DSATopic, SortingAlgo, ListAlgo, TreeAlgo, LeetAlgo, Snapshot } from './types';
@@ -22,6 +23,8 @@ import OutputConsole from './components/OutputConsole';
 import JvmDeveloperMode from './components/JvmDeveloperMode';
 import SystemDesignSandbox from './components/SystemDesignSandbox';
 import AdvancedDsSandbox from './components/AdvancedDsSandbox';
+import GraphCanvas from './components/GraphCanvas';
+import ComplexityOverlay from './components/ComplexityOverlay';
 
 export default function App() {
   // Theme state
@@ -46,6 +49,7 @@ export default function App() {
   // Side-by-Side Algorithm Comparison Mode
   const [compareMode, setCompareMode] = useState(false);
   const [compareSnapshots, setCompareSnapshots] = useState<Snapshot[]>([]);
+  const [isComplexityOpen, setIsComplexityOpen] = useState(false);
   const [comparisonStats, setComparisonStats] = useState({
     algoAName: 'QuickSort',
     algoBName: 'BubbleSort',
@@ -269,6 +273,46 @@ export default function App() {
       if (topic === 'leetcode') setActiveLeetAlgo(defaultAlgo as LeetAlgo);
     }
     triggerXpAward(20, `Entered ${topic.toUpperCase()} Sandbox Module`);
+  };
+
+  const exportSnapshotsAsJson = () => {
+    if (!snapshots || snapshots.length === 0) {
+      triggerXpAward(5, 'Launch an algorithm run trace before exporting! ⚠️');
+      return;
+    }
+
+    const currentAlgoId = getEditorAlgoId();
+    const exportData = {
+      exportMetadata: {
+        exportedAt: new Date().toISOString(),
+        activeTopic,
+        activeAlgorithm: currentAlgoId,
+        totalStepsCount: snapshots.length,
+        version: "2.0.0"
+      },
+      snapshots: snapshots.map((s, index) => ({
+        step: index + 1,
+        lineHighlighted: s.lineHighlighted,
+        actionType: s.actionType,
+        explanation: s.explanation,
+        variables: s.variables || {},
+        consoleOutput: s.consoleOutput
+      }))
+    };
+
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `algoflow-trace-${activeTopic}-${currentAlgoId || 'algorithm'}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    triggerXpAward(30, 'Exported algorithmic snapshots execution trace JSON file 📥');
   };
 
   // Custom Socratic tutor automatic responses
@@ -626,6 +670,18 @@ export default function App() {
               </button>
 
               <button
+                onClick={() => handleTopicNavigation('graphs')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'graphs'
+                    ? 'bg-bg-card/85 text-text-accent border-[#5de6ff] border-r-2 outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Compass className="w-4 h-4 shrink-0 text-[#5de6ff]" />
+                {isSidebarOpen && <span>A* Grid Graphs</span>}
+              </button>
+
+              <button
                 onClick={() => handleTopicNavigation('jvm-mode')}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
                   activeTopic === 'jvm-mode'
@@ -737,6 +793,19 @@ export default function App() {
                         <span>Compare Mode {compareMode ? 'ON' : 'OFF'}</span>
                       </button>
                     )}
+
+                    {/* Complexity Curve Trigger */}
+                    <button 
+                      onClick={() => {
+                        setIsComplexityOpen(true);
+                        triggerXpAward(25, 'Analyzed algorithm math on complexity growth curves');
+                      }}
+                      className="ml-2 px-2.5 py-0.5 rounded text-[10px] bg-bg-card text-text-accent border border-border-custom hover:border-emerald-500/50 hover:text-white font-mono font-black tracking-wider uppercase flex items-center gap-1 transition-all cursor-pointer active:scale-95"
+                      title="Open time complexity growth curves overlay"
+                    >
+                      <Layers className="w-3 h-3 text-[#5de6ff]" />
+                      <span>Complexity Graph</span>
+                    </button>
                   </div>
                   <span className="text-xs font-mono text-text-muted">
                     Step {currentIndex + 1} of {snapshots.length || 1}
@@ -860,6 +929,13 @@ export default function App() {
                             onSnapshotsGenerated={handleSnapshotsGenerated}
                             activeAlgo={activeLeetAlgo}
                             onAlgoChange={setActiveLeetAlgo}
+                          />
+                        )}
+
+                        {activeTopic === 'graphs' && (
+                          <GraphCanvas
+                            currentSnapshot={activeSnap}
+                            onSnapshotsGenerated={handleSnapshotsGenerated}
                           />
                         )}
                       </div>
@@ -1042,6 +1118,16 @@ export default function App() {
                     </span>
                   </div>
 
+                  {/* Export execution trace button */}
+                  <button
+                    onClick={exportSnapshotsAsJson}
+                    className="px-3 py-2 bg-bg-panel hover:bg-bg-card text-[10px] font-mono border border-border-custom hover:border-emerald-500/50 rounded-xl text-emerald-400 font-bold hover:text-white flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 w-full sm:w-auto justify-center"
+                    title="Export snapshot trace as JSON"
+                  >
+                    <FileJson className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Export Trace</span>
+                  </button>
+
                 </div>
 
               </div>
@@ -1222,6 +1308,16 @@ export default function App() {
           <span className="text-[10px] mt-0.5">AI Tutor</span>
         </button>
       </div>
+
+      {/* Complexity Overlay Portal dialog popup */}
+      <ComplexityOverlay
+        isOpen={isComplexityOpen}
+        onClose={() => setIsComplexityOpen(false)}
+        activeTopic={activeTopic}
+        activeAlgo={getEditorAlgoId()}
+        snapshots={snapshots}
+        currentIndex={currentIndex}
+      />
 
     </div>
   );
