@@ -100,6 +100,10 @@ export default function App() {
 
   // Trigger XP award floating notification
   const triggerXpAward = (amount: number, reason: string) => {
+    const reasonSlug = 'reason_' + reason.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (awardedActions.includes(reasonSlug)) return;
+    setAwardedActions(prev => [...prev, reasonSlug]);
+
     setXp(v => {
       const nextXp = v + amount;
       const targetLevel = Math.floor(nextXp / 200) + 1;
@@ -260,6 +264,7 @@ export default function App() {
     if (activeTopic === 'sorting') return activeSortingAlgo;
     if (activeTopic === 'linked-list') return activeListAlgo;
     if (activeTopic === 'leetcode') return activeLeetAlgo;
+    if (activeTopic === 'graphs') return 'astart';
     return activeTreeAlgo;
   };
 
@@ -769,14 +774,26 @@ export default function App() {
                 <div className="p-3 sm:p-4 bg-bg-card/90 border-b border-border-custom flex justify-between items-center flex-wrap gap-2">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[10px] font-mono tracking-widest text-[#5de6ff] uppercase font-bold bg-[#5de6ff]/10 px-2 py-0.5 rounded border border-[#5de6ff]/20">
-                      {activeTopic === 'sorting' ? 'O(n log n)' : activeTopic === 'linked-list' ? 'O(1)' : 'O(log n)'}
+                      {activeTopic === 'sorting' 
+                        ? 'O(n log n)' 
+                        : activeTopic === 'linked-list' 
+                          ? 'O(1)' 
+                          : activeTopic === 'trees' 
+                            ? 'O(log n)' 
+                            : activeTopic === 'graphs' 
+                              ? 'O(V + E)' 
+                              : 'O(n)'}
                     </span>
                     <h2 className="text-sm sm:text-base font-secondary font-black text-white">
                       {activeTopic === 'sorting' 
                         ? (activeSortingAlgo === 'quicksort' ? 'QuickSort Engine' : 'BubbleSort Engine')
                         : activeTopic === 'linked-list'
                           ? (activeListAlgo === 'insertAfter' ? 'insertAfter Splicer' : 'deleteNode Removal')
-                          : (activeTreeAlgo === 'insertBST' ? 'BST Insert Model' : activeTreeAlgo === 'searchBST' ? 'BST Search Path' : 'BST In-Order DFS')
+                          : activeTopic === 'trees'
+                            ? (activeTreeAlgo === 'insertBST' ? 'BST Insert Model' : activeTreeAlgo === 'searchBST' ? 'BST Search Path' : 'BST In-Order DFS')
+                            : activeTopic === 'graphs'
+                              ? 'A* Grid Pathfinding Engine'
+                              : `LeetCode: ${activeLeetAlgo.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}`
                       }
                     </h2>
 

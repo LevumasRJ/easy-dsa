@@ -141,81 +141,151 @@ export default function ExploreLibrary({ onNavigate, searchQuery }: ExploreLibra
         </div>
       )}
 
-      {/* SECTION 2: Concept Sandboxes */}
+      {/* SECTION 2: Concept Sandboxes with Real-world Use Cases Grouping */}
       {sandboxCards.length > 0 && (
-        <div>
-          <div className="flex items-center gap-2 mb-6 border-b border-slate-800/60 pb-3">
-            <Sparkles className="w-5 h-5 text-amber-400" />
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-2 border-b border-slate-800/60 pb-3">
+            <Sparkles className="w-5 h-5 text-amber-500 fill-amber-500 animate-pulse" />
             <h2 className="text-xl font-display font-medium text-[#dae2fd]">
-              Advanced DSA Concept Sandboxes & Playgrounds
+              Practical Systems Engineering Sandboxes
             </h2>
           </div>
+          <p className="text-[#94A3B8] text-sm mb-6 max-w-2xl leading-relaxed">
+             Fundamental software architectures are built on data structures. These interactive sandboxes visualize exactly how basic data models solve complex modern engineering challenges.
+          </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            {/* Render A* specifically as a big featured card if it's in sandboxes */}
-            {sandboxCards.some(c => c.id === 'astart') && (
-              <div 
-                onClick={() => onNavigate('graphs')}
-                className="bento-card md:col-span-2 row-span-2 bg-[#171f33] rounded-2xl border border-slate-800 hover:border-[#bfdbfe]/60 transition-all duration-300 relative overflow-hidden group min-h-[340px] flex flex-col justify-end p-8 cursor-pointer shadow-md"
-              >
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0fb0ff]/10 via-transparent to-transparent opacity-40 z-0 pointer-events-none" />
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="bg-[#bfdbfe]/20 text-[#bfdbfe] text-[10px] font-mono font-bold px-2.5 py-1 rounded uppercase tracking-wider border border-[#bfdbfe]/30">
-                      Featured
-                    </span>
-                    <span className="text-xs font-mono text-[#94A3B8]">Pathfinding Algorithm</span>
-                  </div>
-                  <h3 className="text-2xl font-display font-medium text-[#dae2fd] mb-2 group-hover:text-white transition-colors">
-                    A* Search Algorithm
-                  </h3>
-                  <p className="text-[#c7c4d7] text-sm mb-4 max-w-xl leading-relaxed">
-                    Visualize how A* intelligently navigates complex grids, calculating cumulative step weights and heuristic distances dynamically.
-                  </p>
-                  
-                  {/* Real-world Use Case Explanation Box */}
-                  <div className="bg-slate-900/60 p-3 rounded-lg border border-slate-800 mb-5 text-xs text-blue-300 font-mono flex items-start gap-2">
-                    <HelpCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#bfdbfe]" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {sandboxCards.map(card => {
+              if (card.id === 'astart') {
+                return (
+                  <div 
+                    key={card.id}
+                    onClick={() => onNavigate('graphs')}
+                    className="bento-card border border-slate-800 hover:border-[#bfdbfe]/60 bg-[#171f33] rounded-2xl p-6 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-lg h-full hover:-translate-y-0.5"
+                  >
                     <div>
-                      <span className="font-bold text-[#bfdbfe]">🖥️ Practical Real-World Use Case:</span> GPS map services (Google Maps routing), autonomous driving path planners, and robotic path movement.
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="p-3 bg-blue-500/10 rounded-xl">
+                          {card.icon}
+                        </div>
+                        <span className="bg-[#bfdbfe]/10 text-[#bfdbfe] text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-[#bfdbfe]/20">
+                          Routing Engine
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-display font-bold text-white mb-2 group-hover:text-[#bfdbfe] transition-colors">
+                        {card.title}
+                      </h3>
+                      <p className="text-[#94A3B8] text-xs leading-relaxed mb-4">
+                        {card.desc}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 text-xs font-mono text-blue-300">
+                      <div className="font-bold text-[#bfdbfe] mb-1">🖥️ Systems Use Case:</div>
+                      {card.useCase}
                     </div>
                   </div>
+                );
+              }
 
-                  <button className="flex items-center gap-2 bg-[#bfdbfe] active:scale-95 text-slate-950 text-xs font-bold tracking-wider px-5 py-2.5 rounded-xl hover:bg-slate-100 transition-all cursor-pointer shadow-lg">
-                    <Play className="w-4 h-4 fill-current" />
-                    <span>Launch Grid Pathfinder</span>
-                  </button>
-                </div>
-              </div>
-            )}
+              if (card.id === 'bst') {
+                return (
+                  <div 
+                    key={card.id}
+                    onClick={card.action}
+                    className="bento-card border border-slate-800 hover:border-[#c0c1ff]/60 bg-[#171f33] rounded-2xl p-6 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-lg h-full hover:-translate-y-0.5"
+                  >
+                    <div>
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="p-3 bg-purple-500/10 rounded-xl">
+                          {card.icon}
+                        </div>
+                        <span className="bg-[#c0c1ff]/10 text-[#c0c1ff] text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-[#c0c1ff]/20">
+                          Search Indexer
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-display font-bold text-white mb-2 group-hover:text-[#c0c1ff] transition-colors">
+                        {card.title}
+                      </h3>
+                      <p className="text-[#94A3B8] text-xs leading-relaxed mb-4">
+                        {card.desc}
+                      </p>
+                    </div>
 
-            {/* Render rest of Regular Sandboxes */}
-            {sandboxCards.filter(c => c.id !== 'astart').map(card => (
-              <div 
-                key={card.id}
-                onClick={card.action}
-                className={`bento-card bg-[#171f33] rounded-2xl border ${card.color} p-6 transition-all duration-300 flex flex-col min-h-[260px] cursor-pointer group hover:scale-[1.01]`}
-              >
-                <div className="w-12 h-12 bg-slate-900/50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                  {card.icon}
-                </div>
-                <div>
-                  <div className="text-xs font-mono text-[#94A3B8] mb-1">{card.category}</div>
-                  <h3 className="text-lg font-headline-sm text-[#dae2fd] mb-2 group-hover:text-white transition-colors">
-                    {card.title}
-                  </h3>
-                  <p className="text-xs text-[#94A3B8] mb-4 leading-relaxed line-clamp-3">
-                    {card.desc}
-                  </p>
-                </div>
-                
-                {/* Use Case highlight */}
-                <div className="mt-auto pt-3 border-t border-slate-800/50 text-[11px] font-mono text-emerald-400 bg-emerald-500/5 p-2 rounded border border-emerald-500/10">
-                  <span className="font-bold">🖥️ Use Case:</span> {card.useCase}
-                </div>
-              </div>
-            ))}
+                    <div className="mt-4 bg-purple-500/5 p-3 rounded-xl border border-purple-500/10 text-xs font-mono text-purple-300">
+                      <div className="font-bold text-[#c0c1ff] mb-1">🖥️ Systems Use Case:</div>
+                      {card.useCase}
+                    </div>
+                  </div>
+                );
+              }
+
+              if (card.id === 'quicksort') {
+                return (
+                  <div 
+                    key={card.id}
+                    onClick={card.action}
+                    className="bento-card border border-slate-800 hover:border-amber-500/60 bg-[#171f33] rounded-2xl p-6 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-lg h-full hover:-translate-y-0.5"
+                  >
+                    <div>
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="p-3 bg-amber-500/10 rounded-xl">
+                          {card.icon}
+                        </div>
+                        <span className="bg-amber-500/10 text-amber-400 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-amber-500/20">
+                          Data Ordering
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-display font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">
+                        {card.title}
+                      </h3>
+                      <p className="text-[#94A3B8] text-xs leading-relaxed mb-4">
+                        {card.desc}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 text-xs font-mono text-amber-300">
+                      <div className="font-bold text-amber-400 mb-1">🖥️ Systems Use Case:</div>
+                      {card.useCase}
+                    </div>
+                  </div>
+                );
+              }
+
+              if (card.id === 'linkedlist') {
+                return (
+                  <div 
+                    key={card.id}
+                    onClick={card.action}
+                    className="bento-card border border-slate-800 hover:border-emerald-500/60 bg-[#171f33] rounded-2xl p-6 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-lg h-full hover:-translate-y-0.5"
+                  >
+                    <div>
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="p-3 bg-emerald-500/10 rounded-xl">
+                          {card.icon}
+                        </div>
+                        <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-emerald-500/20">
+                          Queue Splicor
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-display font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                        {card.title}
+                      </h3>
+                      <p className="text-[#94A3B8] text-xs leading-relaxed mb-4">
+                        {card.desc}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 text-xs font-mono text-emerald-300">
+                      <div className="font-bold text-emerald-400 mb-1">🖥️ Systems Use Case:</div>
+                      {card.useCase}
+                    </div>
+                  </div>
+                );
+              }
+
+              return null;
+            })}
           </div>
         </div>
       )}

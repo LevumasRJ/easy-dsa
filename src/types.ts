@@ -38,7 +38,7 @@ export interface Snapshot {
   consoleOutput: string;
 }
 
-export type CodeLanguage = 'cpp' | 'python' | 'javascript' | 'java';
+export type CodeLanguage = 'java' | 'javascript' | 'cpp' | 'python';
 
 export interface CodeTemplate {
   language: CodeLanguage;

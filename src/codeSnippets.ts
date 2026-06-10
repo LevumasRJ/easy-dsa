@@ -416,5 +416,35 @@ export const CODE_SNIPPETS: SnippetsRegistry = {
       { text: '    inorder(root.right);', indent: 1 },
       { text: '}', indent: 0 }
     ]
+  },
+  astart: {
+    javascript: [
+      { text: '// A* Pathfinding Search Algorithm Visualization', indent: 0 },
+      { text: 'function aStarSearch(startNode, endNode, grid) {', indent: 0 },
+      { text: '  let current = openSet.extractMinFCostNode();', indent: 1 },
+      { text: '  for (let neighbor of current.getValidNeighbors()) {', indent: 1 },
+      { text: '  return reconstructPath(endNode);', indent: 0 }
+    ],
+    python: [
+      { text: '# A* Pathfinding Search Algorithm Visualization', indent: 0 },
+      { text: 'def a_star_search(start_node, end_node, grid):', indent: 0 },
+      { text: '    current = open_set.pop_min_f_cost_node()', indent: 1 },
+      { text: '    for neighbor in current.get_valid_neighbors():', indent: 1 },
+      { text: '    return reconstruct_path(end_node)', indent: 0 }
+    ],
+    cpp: [
+      { text: '// A* Pathfinding Search Algorithm Visualization', indent: 0 },
+      { text: 'vector<Node*> aStarSearch(Node* start, Node* end, Grid& grid) {', indent: 0 },
+      { text: '    Node* current = openSet.popMinFCostNode();', indent: 1 },
+      { text: '    for (Node* neighbor : current->getValidNeighbors()) {', indent: 1 },
+      { text: '    return reconstructPath(end);', indent: 0 }
+    ],
+    java: [
+      { text: '// A* Pathfinding Search Algorithm Visualization', indent: 0 },
+      { text: 'public List<Node> aStarSearch(Node start, Node end, Grid grid) {', indent: 0 },
+      { text: '    Node current = openSet.pollMinFCostNode();', indent: 1 },
+      { text: '    for (Node neighbor : current.getValidNeighbors()) {', indent: 1 },
+      { text: '    return reconstructPath(end);', indent: 0 }
+    ]
   }
 };

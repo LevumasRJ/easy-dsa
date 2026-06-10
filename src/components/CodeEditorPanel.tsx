@@ -3,6 +3,7 @@ import { Copy, Check, FileCode, Play, RotateCcw, AlertCircle, FileText, Code2, S
 import { CodeLanguage } from '../types';
 import { CODE_SNIPPETS } from '../codeSnippets';
 import { LEETCODE_CODE_SNIPPETS, NEETCODE_PROBLEMS } from '../leetcodeDatabase';
+import { getAllProblems } from '../utils/syncManager';
 
 // Generate dynamic boilerplates for LeetCode problems when explicit snippets aren't configured
 function getDynamicSnippets(problem: any) {
@@ -129,7 +130,8 @@ export default function CodeEditorPanel({
   if (isLeetCode) {
     algoSnippets = LEETCODE_CODE_SNIPPETS[currentAlgorithm];
   } else {
-    const matchedProblem = NEETCODE_PROBLEMS.find(p => p.id === currentAlgorithm);
+    const allProblems = getAllProblems();
+    const matchedProblem = allProblems.find(p => p.id === currentAlgorithm) || NEETCODE_PROBLEMS.find(p => p.id === currentAlgorithm);
     if (matchedProblem) {
       algoSnippets = getDynamicSnippets(matchedProblem);
     } else {
@@ -225,16 +227,16 @@ export default function CodeEditorPanel({
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#0f172a] rounded-xl border border-slate-800 overflow-hidden">
+    <div className="w-full h-full flex flex-col bg-bg-card rounded-xl border border-border-custom overflow-hidden">
       
       {/* Visual Workspace Subtabs selection */}
-      <div className="flex border-b border-slate-805/85 bg-[#0e1321] px-2 select-none shrink-0">
+      <div className="flex border-b border-border-custom bg-bg-panel px-2 select-none shrink-0">
         <button
           onClick={() => setActiveTab('practice')}
           className={`flex items-center gap-1.5 px-3 py-2 text-xs font-mono font-bold uppercase transition-all tracking-wider ${
             activeTab === 'practice'
-              ? 'border-b-2 border-[#5de6ff] text-[#5de6ff] bg-[#171f33]/40'
-              : 'text-text-muted hover:text-white'
+              ? 'border-b-2 border-accent-custom text-text-accent bg-bg-card/40'
+              : 'text-text-muted hover:text-text-primary'
           }`}
         >
           <Code2 className="w-3.5 h-3.5" />
@@ -247,8 +249,8 @@ export default function CodeEditorPanel({
           onClick={() => setActiveTab('solution')}
           className={`flex items-center gap-1.5 px-3 py-2 text-xs font-mono font-bold uppercase transition-all tracking-wider ${
             activeTab === 'solution'
-              ? 'border-b-2 border-amber-500 text-amber-500 bg-[#171f33]/40'
-              : 'text-text-muted hover:text-white'
+              ? 'border-b-2 border-amber-500 text-amber-500 bg-bg-card/40'
+              : 'text-text-muted hover:text-text-primary'
           }`}
         >
           <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
@@ -257,26 +259,26 @@ export default function CodeEditorPanel({
       </div>
 
       {/* Tab bar header */}
-      <div className="px-4 py-2 bg-[#171f33] border-b border-slate-800 flex items-center justify-between shrink-0">
-        <span className="font-mono text-xs text-[#94A3B8] flex items-center gap-2">
+      <div className="px-4 py-2 bg-bg-panel border-b border-border-custom flex items-center justify-between shrink-0">
+        <span className="font-mono text-xs text-text-muted flex items-center gap-2">
           {activeTab === 'practice' ? (
             <FileText className="w-4 h-4 text-emerald-400" />
           ) : (
-            <FileCode className="w-4 h-4 text-[#5de6ff]" />
+            <FileCode className="w-4 h-4 text-accent-custom" />
           )}
           {extNames[activeLang]}
         </span>
         
         {/* Languages select */}
-        <div className="flex bg-[#0f172a] p-0.5 rounded-lg border border-slate-800/80">
+        <div className="flex bg-bg-card p-0.5 rounded-lg border border-border-custom">
           {(['cpp', 'python', 'javascript', 'java'] as CodeLanguage[]).map(lang => (
             <button
               key={lang}
               onClick={() => setActiveLang(lang)}
               className={`px-2 py-0.5 text-[10px] uppercase font-mono rounded transition-colors ${
                 activeLang === lang
-                  ? 'bg-slate-800 text-white font-bold'
-                  : 'text-[#94A3B8] hover:text-white'
+                  ? 'bg-accent-custom text-white font-bold'
+                  : 'text-text-muted hover:text-text-primary'
               }`}
             >
               {lang === 'cpp' ? 'cpp' : lang === 'python' ? 'py' : lang === 'javascript' ? 'js' : 'java'}
@@ -287,7 +289,7 @@ export default function CodeEditorPanel({
         {/* Copy button */}
         <button
           onClick={handleCopyCode}
-          className="text-[#94A3B8] hover:text-white cursor-pointer active:scale-95 transition-all p-1 rounded hover:bg-slate-800"
+          className="text-text-muted hover:text-text-primary cursor-pointer active:scale-95 transition-all p-1 rounded hover:bg-bg-card border border-transparent hover:border-border-custom"
           title="Copy solution code"
         >
           {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
@@ -295,12 +297,12 @@ export default function CodeEditorPanel({
       </div>
 
       {/* Main Code Body Content block */}
-      <div className="flex-1 flex flex-col min-h-0 bg-[#0c1020] overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 bg-bg-app overflow-hidden">
         {activeTab === 'practice' ? (
           /* Interactive Practicing Code Sandbox Editor */
           <div className="flex-1 flex flex-col p-4 min-h-0">
             <div className="flex items-center justify-between mb-2 shrink-0">
-              <span className="text-[10px] font-mono font-bold tracking-widest text-[#94A3B8] uppercase">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-text-muted uppercase">
                 Write & Execute your logic here:
               </span>
               <button
@@ -314,9 +316,9 @@ export default function CodeEditorPanel({
             </div>
 
             {/* Editable code editor viewport */}
-            <div className="flex-1 min-h-0 rounded-lg border border-slate-800 bg-[#070a13] p-3 flex flex-row font-mono text-xs overflow-hidden relative">
+            <div className="flex-1 min-h-0 rounded-lg border border-border-custom bg-bg-card/45 p-3 flex flex-row font-mono text-xs overflow-hidden relative">
               {/* Fake gutter line numbers */}
-              <div className="w-6 pr-2 mr-2 border-r border-slate-800/65 text-right text-[#94A3B8] opacity-30 select-none flex flex-col leading-6 min-h-0 overflow-hidden">
+              <div className="w-6 pr-2 mr-2 border-r border-border-custom/50 text-right text-text-muted opacity-30 select-none flex flex-col leading-6 min-h-0 overflow-hidden">
                 {Array.from({ length: Math.max(12, draftCode.split('\n').length) }).map((_, index) => (
                   <span key={index}>{index + 1}</span>
                 ))}
@@ -328,7 +330,7 @@ export default function CodeEditorPanel({
                 onChange={(e) => handleDraftChange(e.target.value)}
                 spellCheck={false}
                 autoFocus
-                className="flex-1 bg-transparent border-0 outline-none resize-none text-emerald-300 leading-6 focus:ring-0 selection:bg-slate-700/60 font-mono text-xs overflow-y-auto whitespace-pre h-full w-full"
+                className="flex-1 bg-transparent border-0 outline-none resize-none text-text-primary leading-6 focus:ring-0 selection:bg-slate-700/60 font-mono text-xs overflow-y-auto whitespace-pre h-full w-full"
                 placeholder="// Write your code logic here and validate execution..."
               />
             </div>
@@ -368,11 +370,11 @@ export default function CodeEditorPanel({
           </div>
         ) : (
           /* Synced Animation Read-only Solution Code Viewer with Line Highlights */
-          <div className="flex-1 p-4 overflow-y-auto font-mono text-xs leading-relaxed text-[#c7c4d7]">
+          <div className="flex-1 p-4 overflow-y-auto font-mono text-xs leading-relaxed text-text-primary bg-bg-card/25">
             <code className="block whitespace-pre select-text">
               {lines.map((line, idx) => {
                 // Ignore index 0 if it is the synchrony spacer placeholder
-                if (idx === 0 && line.text.includes('placeholder')) return null;
+                if (idx === 0 && (line.text.includes('placeholder') || line.text.includes('spacer') || line.text.includes('Spacer'))) return null;
 
                 const isCurrentHighlighted = idx === lineHighlighted;
 
@@ -385,16 +387,16 @@ export default function CodeEditorPanel({
                 const parts = text.split(regex);
                 
                 if (text.trim().startsWith('//') || text.trim().startsWith('#')) {
-                  formattedText = <span className="text-[#94A3B8] opacity-50 italic">{text}</span>;
+                  formattedText = <span className="text-text-muted opacity-50 italic">{text}</span>;
                 } else {
                   formattedText = (
                     <span>
                       {parts.map((p, i) => {
                         if (['function', 'def', 'void', 'int', 'vector', 'double', 'TreeNode', 'ListNode', 'return', 'if', 'else', 'while', 'for', 'public', 'class', 'boolean', 'String', 'List', 'Map', 'HashMap', 'Arrays', 'ArrayList', 'new'].includes(p)) {
-                          return <span key={i} className="text-[#c0c1ff] font-bold">{p}</span>;
+                          return <span key={i} className="text-text-accent font-bold">{p}</span>;
                         }
                         if (p.includes('//') || p.includes('#')) {
-                          return <span key={i} className="text-[#94A3B8] opacity-50 italic">{p}</span>;
+                          return <span key={i} className="text-text-muted opacity-50 italic">{p}</span>;
                         }
                         return p;
                       })}
@@ -407,13 +409,13 @@ export default function CodeEditorPanel({
                     key={idx} 
                     className={`flex -mx-4 px-4 py-0.5 transition-all duration-200 ${
                       isCurrentHighlighted 
-                        ? 'bg-[#00cbe6]/10 border-l-2 border-[#00cbe6] text-white font-medium neon-glow-cyan' 
+                        ? 'bg-accent-custom/10 border-l-2 border-accent-custom text-text-primary font-medium neon-glow-primary' 
                         : ''
                     }`}
                   >
                     {/* Line count numbers */}
                     <span className={`w-6 text-right pr-2 select-none font-mono opacity-40 text-[10px] ${
-                      isCurrentHighlighted ? 'text-[#00cbe6] opacity-100 font-bold' : ''
+                      isCurrentHighlighted ? 'text-accent-custom opacity-100 font-bold' : ''
                     }`}>
                       {idx}
                     </span>
@@ -427,7 +429,7 @@ export default function CodeEditorPanel({
                     </span>
 
                     {isCurrentHighlighted && (
-                      <span className="text-[9px] font-mono tracking-wider text-[#00cbe6] opacity-60 ml-2 animate-pulse select-none uppercase font-bold">
+                      <span className="text-[9px] font-mono tracking-wider text-accent-custom opacity-60 ml-2 animate-pulse select-none uppercase font-bold">
                         Active Trace Line
                       </span>
                     )}
