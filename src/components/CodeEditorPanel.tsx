@@ -116,7 +116,7 @@ export default function CodeEditorPanel({
   lineHighlighted,
   awardXpOnce
 }: CodeEditorPanelProps) {
-  const [activeLang, setActiveLang] = useState<CodeLanguage>('cpp');
+  const [activeLang, setActiveLang] = useState<CodeLanguage>('java');
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'practice' | 'solution'>('practice');
   const [draftCode, setDraftCode] = useState<string>('');
@@ -271,7 +271,7 @@ export default function CodeEditorPanel({
         
         {/* Languages select */}
         <div className="flex bg-bg-card p-0.5 rounded-lg border border-border-custom">
-          {(['cpp', 'python', 'javascript', 'java'] as CodeLanguage[]).map(lang => (
+          {(['java', 'javascript', 'python', 'cpp'] as CodeLanguage[]).map(lang => (
             <button
               key={lang}
               onClick={() => setActiveLang(lang)}
