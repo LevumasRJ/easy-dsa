@@ -5,106 +5,7 @@ import { CodeLanguage } from '../types';
 import { CODE_SNIPPETS } from '../codeSnippets';
 import { LEETCODE_CODE_SNIPPETS, NEETCODE_PROBLEMS } from '../leetcodeDatabase';
 import { getAllProblems } from '../utils/syncManager';
-
-// Generate dynamic boilerplates for LeetCode problems when explicit snippets aren't configured
-function getDynamicSnippets(problem: any) {
-  const titleCamel = problem.title
-    .toLowerCase()
-    .replace(/[^a-zA-Z0-9\s]/g, '')
-    .split(' ')
-    .map((word: string, i: number) => i === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1))
-    .join('');
-
-  // Sensible default arguments and types based on name/category
-  let argCpp = "vector<int>& nums";
-  let argPy = "self, nums: List[int]";
-  let argJs = "nums";
-  let argJava = "int[] nums";
-  
-  let retCpp = "bool";
-  let retPy = "bool";
-  let retJs = "boolean";
-  let retJava = "boolean";
-  
-  let dfltCpp = "false";
-  let dfltPy = "False";
-  let dfltJs = "false";
-  let dfltJava = "false";
-
-  const cat = problem.category || "";
-
-  if (cat.includes("Tree")) {
-    argCpp = "TreeNode* root";
-    argPy = "self, root: Optional[TreeNode]";
-    argJs = "root";
-    argJava = "TreeNode root";
-    retCpp = "TreeNode*";
-    retPy = "Optional[TreeNode]";
-    retJs = "TreeNode";
-    retJava = "TreeNode";
-    dfltCpp = "nullptr";
-    dfltPy = "None";
-    dfltJs = "null";
-    dfltJava = "null";
-  } else if (cat.includes("Linked List")) {
-    argCpp = "ListNode* head";
-    argPy = "self, head: Optional[ListNode]";
-    argJs = "head";
-    argJava = "ListNode head";
-    retCpp = "ListNode*";
-    retPy = "Optional[ListNode]";
-    retJs = "ListNode";
-    retJava = "ListNode";
-    dfltCpp = "nullptr";
-    dfltPy = "None";
-    dfltJs = "null";
-    dfltJava = "null";
-  }
-
-  return {
-    cpp: [
-      { text: `// ${problem.title} (LeetCode #${problem.number})`, indent: 0 },
-      { text: `// Category: ${problem.category} | Acceptance: ${problem.acceptance}`, indent: 0 },
-      { text: `class Solution {`, indent: 0 },
-      { text: `public:`, indent: 0 },
-      { text: `    ${retCpp} ${titleCamel}(${argCpp}) {`, indent: 1 },
-      { text: `        // TODO: Implement Dynamic Solution`, indent: 2 },
-      { text: `        return ${dfltCpp};`, indent: 2 },
-      { text: `    }`, indent: 1 },
-      { text: `};`, indent: 0 }
-    ],
-    python: [
-      { text: `# ${problem.title} (LeetCode #${problem.number})`, indent: 0 },
-      { text: `# Category: ${problem.category} | Acceptance: ${problem.acceptance}`, indent: 0 },
-      { text: `class Solution:`, indent: 0 },
-      { text: `    def ${titleCamel}(${argPy}) -> ${retPy}:`, indent: 1 },
-      { text: `        # TODO: Implement Dynamic Solution`, indent: 2 },
-      { text: `        return ${dfltPy}`, indent: 2 }
-    ],
-    javascript: [
-      { text: `/**`, indent: 0 },
-      { text: ` * ${problem.title} (LeetCode #${problem.number})`, indent: 0 },
-      { text: ` * Category: ${problem.category}`, indent: 0 },
-      { text: ` * @param {${retJs === 'boolean' ? 'number[]' : 'string'}} ${argJs.split(',')[0]}`, indent: 0 },
-      { text: ` * @return {${retJs}}`, indent: 0 },
-      { text: ` */`, indent: 0 },
-      { text: `var ${titleCamel} = function(${argJs}) {`, indent: 0 },
-      { text: `    // TODO: Implement Dynamic Solution`, indent: 1 },
-      { text: `    return ${dfltJs};`, indent: 1 },
-      { text: `};`, indent: 0 }
-    ],
-    java: [
-      { text: `// ${problem.title} (LeetCode #${problem.number})`, indent: 0 },
-      { text: `// Category: ${problem.category} | Acceptance: ${problem.acceptance}`, indent: 0 },
-      { text: `class Solution {`, indent: 0 },
-      { text: `    public ${retJava} ${titleCamel}(${argJava}) {`, indent: 1 },
-      { text: `        // TODO: Implement Dynamic Solution`, indent: 2 },
-      { text: `        return ${dfltJava};`, indent: 2 },
-      { text: `    }`, indent: 1 },
-      { text: `}`, indent: 0 }
-    ]
-  };
-}
+import { getSystematicProblemSnippets } from '../utils/solutionDatabase';
 
 function highlightLine(text: string, lang: CodeLanguage): React.ReactNode {
   const trimmed = text.trim();
@@ -268,7 +169,7 @@ export default function CodeEditorPanel({
     const allProblems = getAllProblems();
     const matchedProblem = allProblems.find(p => p.id === currentAlgorithm) || NEETCODE_PROBLEMS.find(p => p.id === currentAlgorithm);
     if (matchedProblem) {
-      algoSnippets = getDynamicSnippets(matchedProblem);
+      algoSnippets = getSystematicProblemSnippets(matchedProblem);
     } else {
       algoSnippets = CODE_SNIPPETS[currentAlgorithm] || CODE_SNIPPETS.bubblesort;
     }
