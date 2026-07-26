@@ -8,6 +8,7 @@ import {
   generateBSTInorderSnapshots,
   DEFAULT_BST_NODES
 } from '../algorithms';
+import { soundSynth } from '../utils/soundSynthesizer';
 
 interface BSTCanvasProps {
   currentSnapshot?: Snapshot;
@@ -59,6 +60,13 @@ export default function BSTCanvas({
   useEffect(() => {
     if (currentSnapshot && currentSnapshot.actionType === 'done' && currentSnapshot.treeState) {
       setTreeNodes(currentSnapshot.treeState);
+      soundSynth.playCompletion();
+    } else if (currentSnapshot && currentSnapshot.actionType === 'traverse') {
+      soundSynth.playNote(55, 0.08, 'sine');
+    } else if (currentSnapshot && currentSnapshot.actionType === 'insert') {
+      soundSynth.playNote(80, 0.1, 'triangle');
+    } else if (currentSnapshot && currentSnapshot.actionType === 'found') {
+      soundSynth.playCompletion();
     }
   }, [currentSnapshot]);
 

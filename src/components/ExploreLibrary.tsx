@@ -1,5 +1,5 @@
 import { DSATopic } from '../types';
-import { Play, Brain, ListCollapse, Network, GitPullRequest, Search, BookOpen, Sparkles, HelpCircle } from 'lucide-react';
+import { Play, Brain, ListCollapse, Network, GitPullRequest, Search, BookOpen, Sparkles, HelpCircle, Cpu, Database, Layers } from 'lucide-react';
 
 interface ExploreLibraryProps {
   onNavigate: (topic: DSATopic, defaultAlgo?: string) => void;
@@ -19,6 +19,42 @@ export default function ExploreLibrary({ onNavigate, searchQuery }: ExploreLibra
       icon: <BookOpen className="w-10 h-10 text-[#5de6ff]" />,
       color: 'border-[#5de6ff]/20 hover:border-[#5de6ff]/60',
       action: () => onNavigate('leetcode', 'twosum')
+    },
+    {
+      id: 'jvm-mode',
+      title: 'JVM Developer Mode & GC Visualizer',
+      category: 'System Internals',
+      tag: 'Advanced',
+      group: 'sandboxes',
+      useCase: 'Java heap allocation, stack frames, garbage collection sweeps, and memory layout inspection.',
+      desc: 'Inspect JVM internal stack registers, heap generations (Eden, Survivor, Tenured), garbage collection sweeps, and bytecode offsets.',
+      icon: <Cpu className="w-10 h-10 text-emerald-400" />,
+      color: 'border-emerald-500/20 hover:border-emerald-500/60',
+      action: () => onNavigate('jvm-mode')
+    },
+    {
+      id: 'system-design',
+      title: 'System Design Architecture Sandbox',
+      category: 'Distributed Systems',
+      tag: 'Architecture',
+      group: 'sandboxes',
+      useCase: 'High-availability cloud services, load balancing, message queues, and distributed databases.',
+      desc: 'Simulate high-concurrency microservice architectures with active load balancers, Redis caches, Kafka message streams, and SQL replicas.',
+      icon: <Network className="w-10 h-10 text-indigo-400" />,
+      color: 'border-indigo-500/20 hover:border-indigo-500/60',
+      action: () => onNavigate('system-design')
+    },
+    {
+      id: 'advanced-ds',
+      title: 'Advanced DS Deck (B-Tree, Trie, Segment Tree)',
+      category: 'Data Structures',
+      tag: 'Pro',
+      group: 'sandboxes',
+      useCase: 'Database indexes, auto-complete search engines, and spatial interval queries.',
+      desc: 'Master complex data structures with interactive operations for B-Trees, Prefix Tries, Segment Trees, and Disjoint Set Unions.',
+      icon: <Database className="w-10 h-10 text-amber-400" />,
+      color: 'border-amber-500/20 hover:border-amber-500/60',
+      action: () => onNavigate('advanced-ds')
     },
     {
       id: 'astart',
@@ -155,137 +191,35 @@ export default function ExploreLibrary({ onNavigate, searchQuery }: ExploreLibra
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {sandboxCards.map(card => {
-              if (card.id === 'astart') {
-                return (
-                  <div 
-                    key={card.id}
-                    onClick={() => onNavigate('graphs')}
-                    className="bento-card border border-slate-800 hover:border-[#bfdbfe]/60 bg-[#171f33] rounded-2xl p-6 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-lg h-full hover:-translate-y-0.5"
-                  >
-                    <div>
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-blue-500/10 rounded-xl">
-                          {card.icon}
-                        </div>
-                        <span className="bg-[#bfdbfe]/10 text-[#bfdbfe] text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-[#bfdbfe]/20">
-                          Routing Engine
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-display font-bold text-white mb-2 group-hover:text-[#bfdbfe] transition-colors">
-                        {card.title}
-                      </h3>
-                      <p className="text-[#94A3B8] text-xs leading-relaxed mb-4">
-                        {card.desc}
-                      </p>
+            {sandboxCards.map(card => (
+              <div 
+                key={card.id}
+                onClick={card.action}
+                className={`bento-card border bg-[#171f33] rounded-2xl p-6 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-lg h-full hover:-translate-y-0.5 ${card.color}`}
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="p-3 bg-slate-900/60 rounded-xl">
+                      {card.icon}
                     </div>
-
-                    <div className="mt-4 bg-blue-500/5 p-3 rounded-xl border border-blue-500/10 text-xs font-mono text-blue-300">
-                      <div className="font-bold text-[#bfdbfe] mb-1">🖥️ Systems Use Case:</div>
-                      {card.useCase}
-                    </div>
+                    <span className="bg-slate-800 text-[#5de6ff] text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-slate-700 uppercase tracking-wider">
+                      {card.category}
+                    </span>
                   </div>
-                );
-              }
+                  <h3 className="text-xl font-display font-bold text-white mb-2 group-hover:text-[#5de6ff] transition-colors">
+                    {card.title}
+                  </h3>
+                  <p className="text-[#94A3B8] text-xs leading-relaxed mb-4">
+                    {card.desc}
+                  </p>
+                </div>
 
-              if (card.id === 'bst') {
-                return (
-                  <div 
-                    key={card.id}
-                    onClick={card.action}
-                    className="bento-card border border-slate-800 hover:border-[#c0c1ff]/60 bg-[#171f33] rounded-2xl p-6 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-lg h-full hover:-translate-y-0.5"
-                  >
-                    <div>
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-purple-500/10 rounded-xl">
-                          {card.icon}
-                        </div>
-                        <span className="bg-[#c0c1ff]/10 text-[#c0c1ff] text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-[#c0c1ff]/20">
-                          Search Indexer
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-display font-bold text-white mb-2 group-hover:text-[#c0c1ff] transition-colors">
-                        {card.title}
-                      </h3>
-                      <p className="text-[#94A3B8] text-xs leading-relaxed mb-4">
-                        {card.desc}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 bg-purple-500/5 p-3 rounded-xl border border-purple-500/10 text-xs font-mono text-purple-300">
-                      <div className="font-bold text-[#c0c1ff] mb-1">🖥️ Systems Use Case:</div>
-                      {card.useCase}
-                    </div>
-                  </div>
-                );
-              }
-
-              if (card.id === 'quicksort') {
-                return (
-                  <div 
-                    key={card.id}
-                    onClick={card.action}
-                    className="bento-card border border-slate-800 hover:border-amber-500/60 bg-[#171f33] rounded-2xl p-6 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-lg h-full hover:-translate-y-0.5"
-                  >
-                    <div>
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-amber-500/10 rounded-xl">
-                          {card.icon}
-                        </div>
-                        <span className="bg-amber-500/10 text-amber-400 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-amber-500/20">
-                          Data Ordering
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-display font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">
-                        {card.title}
-                      </h3>
-                      <p className="text-[#94A3B8] text-xs leading-relaxed mb-4">
-                        {card.desc}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 text-xs font-mono text-amber-300">
-                      <div className="font-bold text-amber-400 mb-1">🖥️ Systems Use Case:</div>
-                      {card.useCase}
-                    </div>
-                  </div>
-                );
-              }
-
-              if (card.id === 'linkedlist') {
-                return (
-                  <div 
-                    key={card.id}
-                    onClick={card.action}
-                    className="bento-card border border-slate-800 hover:border-emerald-500/60 bg-[#171f33] rounded-2xl p-6 transition-all duration-300 cursor-pointer group flex flex-col justify-between shadow-lg h-full hover:-translate-y-0.5"
-                  >
-                    <div>
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="p-3 bg-emerald-500/10 rounded-xl">
-                          {card.icon}
-                        </div>
-                        <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border border-emerald-500/20">
-                          Queue Splicor
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-display font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
-                        {card.title}
-                      </h3>
-                      <p className="text-[#94A3B8] text-xs leading-relaxed mb-4">
-                        {card.desc}
-                      </p>
-                    </div>
-
-                    <div className="mt-4 bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 text-xs font-mono text-emerald-300">
-                      <div className="font-bold text-emerald-400 mb-1">🖥️ Systems Use Case:</div>
-                      {card.useCase}
-                    </div>
-                  </div>
-                );
-              }
-
-              return null;
-            })}
+                <div className="mt-4 bg-slate-900/40 p-3 rounded-xl border border-slate-800 text-xs font-mono text-slate-300">
+                  <div className="font-bold text-[#5de6ff] mb-1">🖥️ Systems Use Case:</div>
+                  {card.useCase}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

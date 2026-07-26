@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { RefreshCw, Play, Send } from 'lucide-react';
 import { Snapshot, SortingAlgo } from '../types';
 import { generateBubbleSortSnapshots, generateQuickSortSnapshots } from '../algorithms';
+import { soundSynth } from '../utils/soundSynthesizer';
 
 interface SortingCanvasProps {
   currentSnapshot?: Snapshot;
@@ -68,6 +69,25 @@ export default function SortingCanvas({
   useEffect(() => {
     triggerAlgorithm(array, activeAlgo);
   }, []);
+
+  // Trigger sound synthesizer on snapshot update
+  useEffect(() => {
+    if (!currentSnapshot) return;
+    const action = currentSnapshot.actionType;
+    const indices = currentSnapshot.activeIndices || [];
+    const currentBars = currentSnapshot.arrayState || array;
+
+    if (action === 'swap') {
+      const valA = currentBars[indices[0]] || 40;
+      const valB = currentBars[indices[1]] || 70;
+      soundSynth.playSwap(valA, valB);
+    } else if (action === 'compare') {
+      const val = currentBars[indices[0]] || 50;
+      soundSynth.playNote(val, 0.06, 'sine');
+    } else if (action === 'done' || action === 'sorted') {
+      soundSynth.playCompletion();
+    }
+  }, [currentSnapshot]);
 
   // Determine bar heights and styling colors based on currentSnapshot
   const bars = currentSnapshot?.arrayState || array;

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { RefreshCw, Play, Plus, Trash2 } from 'lucide-react';
 import { Snapshot, LinkedListNodeState, ListAlgo } from '../types';
 import { generateListInsertSnapshots, generateListDeleteSnapshots } from '../algorithms';
+import { soundSynth } from '../utils/soundSynthesizer';
 
 interface LinkedListCanvasProps {
   currentSnapshot?: Snapshot;
@@ -68,6 +69,21 @@ export default function LinkedListCanvas({
   useEffect(() => {
     triggerAlgorithm(nodes, activeAlgo, '3');
   }, []);
+
+  // Audio feedback effect on list snapshot updates
+  useEffect(() => {
+    if (!currentSnapshot) return;
+    const action = currentSnapshot.actionType;
+    if (action === 'traverse') {
+      soundSynth.playNote(45, 0.08, 'sine');
+    } else if (action === 'pointer_rewire' || action === 'insert') {
+      soundSynth.playNote(75, 0.12, 'triangle');
+    } else if (action === 'delete') {
+      soundSynth.playNote(25, 0.1, 'sawtooth');
+    } else if (action === 'done') {
+      soundSynth.playCompletion();
+    }
+  }, [currentSnapshot]);
 
   // Determine lists state or snapshots
   const activeNodes = currentSnapshot?.linkedListState || nodes;

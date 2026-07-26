@@ -6,11 +6,12 @@ import {
   Layers, ChevronDown, ListCollapse,
   Brain, Network, BookOpen, Crown, ChevronRight, PlayCircle,
   Trophy, Timer, Target, Star, Zap, Split, Cpu, RefreshCw, Database,
-  FileJson, Compass
+  FileJson, Compass, Volume2, VolumeX, Command
 } from 'lucide-react';
 
 import { DSATopic, SortingAlgo, ListAlgo, TreeAlgo, LeetAlgo, Snapshot } from './types';
 import { DEFAULT_BST_NODES, generateBubbleSortSnapshots, generateQuickSortSnapshots } from './algorithms';
+import { soundSynth } from './utils/soundSynthesizer';
 
 import ExploreLibrary from './components/ExploreLibrary';
 import SortingCanvas from './components/SortingCanvas';
@@ -25,10 +26,15 @@ import SystemDesignSandbox from './components/SystemDesignSandbox';
 import AdvancedDsSandbox from './components/AdvancedDsSandbox';
 import GraphCanvas from './components/GraphCanvas';
 import ComplexityOverlay from './components/ComplexityOverlay';
+import CommandPaletteModal from './components/CommandPaletteModal';
 
 export default function App() {
   // Theme state
   const [theme, setTheme] = useState<'dark' | 'light' | 'amoled' | 'hacker' | 'cyberpunk'>('dark');
+
+  // Command Palette & Sound States
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(soundSynth.getMuted());
 
   // Navigation State
   const [activeTopic, setActiveTopic] = useState<DSATopic>('explore');
@@ -141,6 +147,49 @@ export default function App() {
     setAwardedActions(prev => [...prev, actionId]);
     triggerXpAward(amount, reason);
   };
+
+  // Global Keyboard Shortcuts Listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept typing in inputs or textareas
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || (e.target as HTMLElement)?.isContentEditable) {
+        return;
+      }
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+        return;
+      }
+
+      if (e.key === '?') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(true);
+        return;
+      }
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        handlePlayPause();
+      } else if (e.code === 'ArrowRight') {
+        e.preventDefault();
+        handleStepForward();
+      } else if (e.code === 'ArrowLeft') {
+        e.preventDefault();
+        handleStepBackward();
+      } else if (e.key.toLowerCase() === 'r') {
+        e.preventDefault();
+        handleReset();
+      } else if (e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        setCompareMode(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [snapshots.length, isPlaying]);
 
   // Timed Interview ticking
   useEffect(() => {
@@ -541,6 +590,36 @@ export default function App() {
         {/* Navigation Action icons */}
         <div className="flex items-center gap-2 sm:gap-3">
           
+          {/* Quick Command Palette Button */}
+          <button
+            onClick={() => setIsCommandPaletteOpen(true)}
+            className="hidden sm:flex items-center gap-2 bg-bg-card/60 border border-border-custom hover:border-accent-custom px-3 py-1.5 rounded-xl text-xs font-mono text-text-muted hover:text-white transition-all cursor-pointer"
+            title="Open Command Palette (Cmd+K)"
+          >
+            <Search className="w-3.5 h-3.5 text-[#5de6ff]" />
+            <span className="hidden lg:inline font-semibold">Search / Actions</span>
+            <kbd className="text-[10px] font-mono px-1.5 py-0.5 bg-bg-panel border border-border-custom rounded text-text-muted">
+              ⌘K
+            </kbd>
+          </button>
+
+          {/* Web Audio Synthesizer Sound Toggle */}
+          <button
+            onClick={() => {
+              const nextMuted = soundSynth.toggleMute();
+              setIsMuted(nextMuted);
+              triggerXpAward(10, nextMuted ? 'Synthesizer Audio Muted' : 'Synthesizer Web Audio Enabled 🎵');
+            }}
+            className={`p-2 rounded-full border transition-all cursor-pointer ${
+              !isMuted 
+                ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400' 
+                : 'bg-bg-card/40 border-border-custom text-text-muted hover:text-white'
+            }`}
+            title={isMuted ? "Unmute Synthesizer Audio" : "Mute Synthesizer Audio"}
+          >
+            {!isMuted ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4 text-text-muted" />}
+          </button>
+
           {/* Active Interview Challenge indicator button */}
           {interviewMode ? (
             <div className="flex items-center gap-1.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 px-2 sm:px-3 py-1 rounded-lg text-xs font-mono font-bold animate-pulse">
@@ -1340,6 +1419,18 @@ export default function App() {
         activeAlgo={getEditorAlgoId()}
         snapshots={snapshots}
         currentIndex={currentIndex}
+      />
+
+      {/* Command Palette & Keyboard Shortcuts Modal */}
+      <CommandPaletteModal
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onNavigate={handleTopicNavigation}
+        onThemeChange={(t) => {
+          setTheme(t);
+          awardXpOnce(`theme_load_${t}`, 10, `Loaded ${t.toUpperCase()} style token`);
+        }}
+        currentTheme={theme}
       />
 
     </div>
