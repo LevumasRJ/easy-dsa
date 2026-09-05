@@ -145,6 +145,54 @@ export default function CommandPaletteModal({
       action: () => { onNavigate('advanced-ds'); onClose(); },
       keywords: 'prefix trie interval segment btree'
     },
+    {
+      id: 'module-lld',
+      title: 'Low-Level Design (LLD) & UML Engine',
+      category: 'Object-Oriented Design',
+      icon: <Layers className="w-4 h-4 text-purple-400" />,
+      action: () => { onNavigate('lld'); onClose(); },
+      keywords: 'parking lot splitwise elevator uml class diagram design patterns'
+    },
+    {
+      id: 'module-networking',
+      title: 'Computer Networking & Protocol Wire',
+      category: 'Networking',
+      icon: <Network className="w-4 h-4 text-blue-400" />,
+      action: () => { onNavigate('networking'); onClose(); },
+      keywords: 'tcp 3-way handshake http osi stack wire dns tls'
+    },
+    {
+      id: 'module-os',
+      title: 'Operating Systems Kernel & MMU Visual',
+      category: 'Operating Systems',
+      icon: <Cpu className="w-4 h-4 text-amber-400" />,
+      action: () => { onNavigate('os'); onClose(); },
+      keywords: 'cpu registers scheduler context switch deadlock page fault'
+    },
+    {
+      id: 'module-databases',
+      title: 'Databases & B+ Tree Storage Engines',
+      category: 'Databases',
+      icon: <Database className="w-4 h-4 text-indigo-400" />,
+      action: () => { onNavigate('databases'); onClose(); },
+      keywords: 'btree wal acid buffer pool lru query plan'
+    },
+    {
+      id: 'module-roadmap',
+      title: 'Interview Preparation Roadmap Planner',
+      category: 'Interview Preparation',
+      icon: <Sparkles className="w-4 h-4 text-amber-400" />,
+      action: () => { onNavigate('roadmap'); onClose(); },
+      keywords: 'schedule timeline prerequisites backlog daily target'
+    },
+    {
+      id: 'module-aptitude',
+      title: 'Timed Aptitude & CS Core Mock Test',
+      category: 'Examination Engine',
+      icon: <Sparkles className="w-4 h-4 text-emerald-400" />,
+      action: () => { onNavigate('aptitude'); onClose(); },
+      keywords: 'aptitude quantitative logical exam mock proof derivations'
+    },
     // Theme options
     {
       id: 'theme-dark',

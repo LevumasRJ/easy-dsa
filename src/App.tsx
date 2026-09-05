@@ -28,6 +28,16 @@ import GraphCanvas from './components/GraphCanvas';
 import ComplexityOverlay from './components/ComplexityOverlay';
 import CommandPaletteModal from './components/CommandPaletteModal';
 
+// Chai Visual Canvas Engines
+import LLDCanvas from './components/LLDCanvas';
+import NetworkingCanvas from './components/NetworkingCanvas';
+import OSCanvas from './components/OSCanvas';
+import DBCanvas from './components/DBCanvas';
+import RoadmapPlanner from './components/RoadmapPlanner';
+import AptitudeEngine from './components/AptitudeEngine';
+import { DUAL_APPROACH_BENCHMARKS, generateTwoSumDualSnapshots } from './dualApproachAlgorithms';
+import { AlgorithmicApproach } from './types';
+
 export default function App() {
   // Theme state
   const [theme, setTheme] = useState<'dark' | 'light' | 'amoled' | 'hacker' | 'cyberpunk'>('dark');
@@ -39,6 +49,9 @@ export default function App() {
   // Navigation State
   const [activeTopic, setActiveTopic] = useState<DSATopic>('explore');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Dual-Approach Algorithmic State (Brute Force vs Optimized Trick)
+  const [activeApproach, setActiveApproach] = useState<AlgorithmicApproach>('OPTIMIZED_TRICK');
 
   // Mobile layout tabs
   // 'visualizer' | 'code' | 'variables' | 'console' | 'ai-tutor'
@@ -314,6 +327,10 @@ export default function App() {
     if (activeTopic === 'linked-list') return activeListAlgo;
     if (activeTopic === 'leetcode') return activeLeetAlgo;
     if (activeTopic === 'graphs') return 'astart';
+    if (activeTopic === 'lld') return 'lld_parking';
+    if (activeTopic === 'networking') return 'net_tcp';
+    if (activeTopic === 'os') return 'os_scheduling';
+    if (activeTopic === 'databases') return 'db_btree';
     return activeTreeAlgo;
   };
 
@@ -804,6 +821,79 @@ export default function App() {
                 <Database className="w-4 h-4 shrink-0 text-amber-400" />
                 {isSidebarOpen && <span>Advanced DS Deck</span>}
               </button>
+
+              {/* Chai Visual New Multitracks */}
+              <button
+                onClick={() => handleTopicNavigation('lld')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'lld'
+                    ? 'bg-bg-card/85 text-purple-400 border-r-2 border-purple-400 outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Layers className="w-4 h-4 shrink-0 text-purple-400" />
+                {isSidebarOpen && <span>Low-Level Design (LLD)</span>}
+              </button>
+
+              <button
+                onClick={() => handleTopicNavigation('networking')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'networking'
+                    ? 'bg-bg-card/85 text-blue-400 border-r-2 border-blue-400 outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Network className="w-4 h-4 shrink-0 text-blue-400" />
+                {isSidebarOpen && <span>Networking Wire</span>}
+              </button>
+
+              <button
+                onClick={() => handleTopicNavigation('os')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'os'
+                    ? 'bg-bg-card/85 text-amber-400 border-r-2 border-amber-400 outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Cpu className="w-4 h-4 shrink-0 text-amber-400" />
+                {isSidebarOpen && <span>OS Kernel & MMU</span>}
+              </button>
+
+              <button
+                onClick={() => handleTopicNavigation('databases')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'databases'
+                    ? 'bg-bg-card/85 text-indigo-400 border-r-2 border-indigo-400 outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Database className="w-4 h-4 shrink-0 text-indigo-400" />
+                {isSidebarOpen && <span>Databases & B+ Tree</span>}
+              </button>
+
+              <button
+                onClick={() => handleTopicNavigation('roadmap')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'roadmap'
+                    ? 'bg-bg-card/85 text-amber-400 border-r-2 border-amber-400 outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Target className="w-4 h-4 shrink-0 text-amber-400" />
+                {isSidebarOpen && <span>Interview Roadmap</span>}
+              </button>
+
+              <button
+                onClick={() => handleTopicNavigation('aptitude')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wide uppercase transition-all ${
+                  activeTopic === 'aptitude'
+                    ? 'bg-bg-card/85 text-emerald-400 border-r-2 border-emerald-400 outline-none'
+                    : 'text-text-muted hover:bg-bg-card/30 hover:text-white'
+                }`}
+              >
+                <Trophy className="w-4 h-4 shrink-0 text-emerald-400" />
+                {isSidebarOpen && <span>Timed Aptitude Exam</span>}
+              </button>
             </nav>
           </div>
 
@@ -842,6 +932,14 @@ export default function App() {
             <div className="flex-1 overflow-y-auto p-1 bg-bg-app">
               <AdvancedDsSandbox />
             </div>
+          ) : activeTopic === 'roadmap' ? (
+            <div className="flex-1 overflow-y-auto p-2 sm:p-4 bg-bg-app">
+              <RoadmapPlanner onNavigateTopic={handleTopicNavigation} />
+            </div>
+          ) : activeTopic === 'aptitude' ? (
+            <div className="flex-1 overflow-y-auto p-2 sm:p-4 bg-bg-app">
+              <AptitudeEngine />
+            </div>
           ) : (
             // Full interactive layout structure
             <>
@@ -861,7 +959,15 @@ export default function App() {
                             ? 'O(log n)' 
                             : activeTopic === 'graphs' 
                               ? 'O(V + E)' 
-                              : 'O(n)'}
+                              : activeTopic === 'lld'
+                                ? 'Design Patterns'
+                                : activeTopic === 'networking'
+                                  ? 'OSI & TCP/IP'
+                                  : activeTopic === 'os'
+                                    ? 'Kernel & MMU'
+                                    : activeTopic === 'databases'
+                                      ? 'B+ Tree & ACID'
+                                      : 'O(n)'}
                     </span>
                     <h2 className="text-sm sm:text-base font-secondary font-black text-white">
                       {activeTopic === 'sorting' 
@@ -872,9 +978,59 @@ export default function App() {
                             ? (activeTreeAlgo === 'insertBST' ? 'BST Insert Model' : activeTreeAlgo === 'searchBST' ? 'BST Search Path' : 'BST In-Order DFS')
                             : activeTopic === 'graphs'
                               ? 'A* Grid Pathfinding Engine'
-                              : `LeetCode: ${activeLeetAlgo.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}`
+                              : activeTopic === 'lld'
+                                ? 'Low-Level Design (LLD) & UML Engine'
+                                : activeTopic === 'networking'
+                                  ? 'Computer Networking & Wire Simulation'
+                                  : activeTopic === 'os'
+                                    ? 'Operating Systems Kernel & MMU'
+                                    : activeTopic === 'databases'
+                                      ? 'Databases & B+ Tree Storage Engine'
+                                      : `LeetCode: ${activeLeetAlgo.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}`
                       }
                     </h2>
+
+                    {/* Dual-Approach Toggle (Brute Force vs Optimized Trick) for LeetCode Two Sum */}
+                    {activeTopic === 'leetcode' && activeLeetAlgo === 'twosum' && (
+                      <div className="flex items-center gap-1 bg-bg-card p-0.5 rounded-lg border border-border-custom text-[10px] font-mono">
+                        <button
+                          onClick={() => {
+                            setActiveApproach('BRUTE_FORCE');
+                            const snaps = generateTwoSumDualSnapshots('BRUTE_FORCE');
+                            setSnapshots(snaps);
+                            setCurrentIndex(0);
+                            setIsPlaying(false);
+                            triggerXpAward(25, 'Switched to Brute Force O(N^2) Benchmark Analysis');
+                          }}
+                          className={`px-2 py-0.5 rounded font-bold transition-all cursor-pointer ${
+                            activeApproach === 'BRUTE_FORCE'
+                              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                              : 'text-text-muted hover:text-white'
+                          }`}
+                          title="Exhaustive pairwise scanning: O(N^2) time, O(1) space"
+                        >
+                          Brute Force O(N²)
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActiveApproach('OPTIMIZED_TRICK');
+                            const snaps = generateTwoSumDualSnapshots('OPTIMIZED_TRICK');
+                            setSnapshots(snaps);
+                            setCurrentIndex(0);
+                            setIsPlaying(false);
+                            triggerXpAward(25, 'Switched to Optimized Hash Map O(N) Benchmark Analysis');
+                          }}
+                          className={`px-2 py-0.5 rounded font-bold transition-all cursor-pointer ${
+                            activeApproach === 'OPTIMIZED_TRICK'
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                              : 'text-text-muted hover:text-white'
+                          }`}
+                          title="Hash map complement lookup: O(N) time, O(N) space"
+                        >
+                          Optimized O(N)
+                        </button>
+                      </div>
+                    )}
 
                     {/* Side-by-Side Algorithm comparison toggle (for Sorting Arrays & Lists) */}
                     {(activeTopic === 'sorting' || activeTopic === 'linked-list') && (
@@ -1034,6 +1190,34 @@ export default function App() {
 
                         {activeTopic === 'graphs' && (
                           <GraphCanvas
+                            currentSnapshot={activeSnap}
+                            onSnapshotsGenerated={handleSnapshotsGenerated}
+                          />
+                        )}
+
+                        {activeTopic === 'lld' && (
+                          <LLDCanvas
+                            currentSnapshot={activeSnap}
+                            onSnapshotsGenerated={handleSnapshotsGenerated}
+                          />
+                        )}
+
+                        {activeTopic === 'networking' && (
+                          <NetworkingCanvas
+                            currentSnapshot={activeSnap}
+                            onSnapshotsGenerated={handleSnapshotsGenerated}
+                          />
+                        )}
+
+                        {activeTopic === 'os' && (
+                          <OSCanvas
+                            currentSnapshot={activeSnap}
+                            onSnapshotsGenerated={handleSnapshotsGenerated}
+                          />
+                        )}
+
+                        {activeTopic === 'databases' && (
+                          <DBCanvas
                             currentSnapshot={activeSnap}
                             onSnapshotsGenerated={handleSnapshotsGenerated}
                           />

@@ -1,6 +1,6 @@
 {
   "name": "AlgoFlow",
-  "description": "Interactive Data Structures & Algorithms Animator Platform for sorting, linked list and BST visualization with a deterministic snapshot engine, playback controls, variable watch, and synchronized code execution trace.",
+  "description": "Comprehensive interactive visual learning platform featuring DSA, Low-Level Design (LLD), Computer Networking, Operating Systems Kernel & MMU, Database Storage Engines, Timed Aptitude Exam, and Adaptive Roadmap Planning.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
